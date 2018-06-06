@@ -3,15 +3,21 @@ package com.stuff.doujin.h2r.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.stuff.doujin.h2r.R;
+import com.stuff.doujin.h2r.adapters.ChapterAdapter;
+import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
 
 import me.gujun.android.taggroup.TagGroup;
@@ -19,11 +25,14 @@ import me.gujun.android.taggroup.TagGroup;
 public class DoujinDetailsFragment extends Fragment {
 
     private Doujin doujin;
+    private ChapterAdapter chapterAdapter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doujin = (Doujin) getArguments().getSerializable("doujin");
+        chapterAdapter = new ChapterAdapter(getContext(), doujin.chapterList);
     }
 
     @Override
@@ -69,6 +78,13 @@ public class DoujinDetailsFragment extends Fragment {
             Glide.with(view.getContext()).clear(doujinCover);
             Glide.with(view.getContext()).load(doujin.imageUrl).apply(options).into(doujinCover);
 
+            doujinCover.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getContext(), doujin.chapterList.get(0).chapterName, Toast.LENGTH_SHORT).show();
+                }
+            });
+
             Glide.with(view.getContext()).clear(doujinBackdrop);
             Glide.with(view.getContext()).load(doujin.imageUrl).apply(options).into(doujinBackdrop);
         }
@@ -76,14 +92,6 @@ public class DoujinDetailsFragment extends Fragment {
         if(doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
         }
-
-//        if(doujin.doujinDescription != null && !doujin.doujinDescription.isEmpty()) {
-//            ((TextView) view.findViewById(R.id.manga_summary)).setText(doujin.doujinDescription);
-//        } else {
-//            ((TextView) view.findViewById(R.id.manga_summary)).setText(unknownText);
-//        }
-
-
     }
 
 
