@@ -15,18 +15,17 @@ import com.stuff.doujin.h2r.data.Doujin;
 import com.stuff.doujin.h2r.fragments.DoujinDetailsFragment;
 import com.stuff.doujin.h2r.fragments.DoujinListFragment;
 import com.stuff.doujin.h2r.fragments.LoadingFragment;
-import com.stuff.doujin.h2r.network.DoujinListLoaded;
 import com.stuff.doujin.h2r.network.GetDoujinDetails;
 import com.stuff.doujin.h2r.network.GetDoujinList;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded {
+        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded {
 
-    GetDoujinList getDoujinList = new GetDoujinList();
-    GetDoujinDetails getDoujinDetails = new GetDoujinDetails();
     String baseUrl;
+    GetDoujinList getDoujinList;
+    GetDoujinDetails getDoujinDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +42,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        getDoujinList = new GetDoujinList(getBaseContext());
+        getDoujinDetails = new GetDoujinDetails(getBaseContext());
 
         if (savedInstanceState == null) {
             navigationView.getMenu().getItem(0).setChecked(true);

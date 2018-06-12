@@ -1,5 +1,8 @@
 package com.stuff.doujin.h2r.network;
 
+import android.content.Context;
+
+import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.data.Doujin;
 
 import org.jsoup.Jsoup;
@@ -8,6 +11,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import okhttp3.Call;
@@ -16,12 +21,21 @@ import okhttp3.Response;
 
 public final class GetDoujinList implements Callback {
 
+    public interface DoujinListLoaded {
+        void doujinListLoaded(ArrayList<Doujin> doujinList, String nextPageUrl);
+    }
+
     private ArrayList<Doujin> doujinList = new ArrayList<>();
     private DoujinListLoaded doujinListLoaded;
+    private Context context;
+
+    public GetDoujinList(Context context) {
+        this.context = context;
+    }
 
     public void loadDoujinList(DoujinListLoaded doujinListLoaded, String url) {
         this.doujinListLoaded = doujinListLoaded;
-        OkHttpHandler.run(url, this);
+        OkHttpHandler.run(context.getResources().getString(R.string.base_url) + url, this);
     }
 
     @Override
@@ -53,6 +67,17 @@ public final class GetDoujinList implements Callback {
             String doujinUrl = e.attr("href");
             if(doujinUrl.isEmpty()) {
                 doujinUrl = element.attr("href");
+            }
+
+            try {
+                URI uri = new URI(doujinUrl);
+                String out = uri.getPath();
+                if (uri.getQuery() != null)
+                    out += "?" + uri.getQuery();
+                if (uri.getFragment() != null)
+                    out += "#" + uri.getFragment();
+                doujinUrl = out;
+            } catch (URISyntaxException exception) {
             }
 
             if(title.indexOf(" [") > 0) {

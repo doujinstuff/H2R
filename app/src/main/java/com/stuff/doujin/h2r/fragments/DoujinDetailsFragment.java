@@ -19,6 +19,8 @@ import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.ChapterAdapter;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
+import com.stuff.doujin.h2r.network.GetDoujinDetails;
+import com.stuff.doujin.h2r.network.GetPageList;
 
 import me.gujun.android.taggroup.TagGroup;
 
@@ -27,12 +29,13 @@ public class DoujinDetailsFragment extends Fragment {
     private Doujin doujin;
     private ChapterAdapter chapterAdapter;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doujin = (Doujin) getArguments().getSerializable("doujin");
         chapterAdapter = new ChapterAdapter(getContext(), doujin.chapterList);
+        GetPageList getPageList= new GetPageList(getContext());
+        getPageList.loadPageList(doujin.chapterList.get(0).chapterUrl);
     }
 
     @Override
@@ -92,6 +95,10 @@ public class DoujinDetailsFragment extends Fragment {
         if(doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
         }
+
+        RecyclerView recyclerView = view.findViewById(R.id.chapter_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setAdapter(chapterAdapter);
     }
 
 

@@ -1,5 +1,8 @@
 package com.stuff.doujin.h2r.network;
 
+import android.content.Context;
+
+import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.data.Chapter;
 import com.stuff.doujin.h2r.data.Doujin;
 
@@ -9,7 +12,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -24,11 +30,16 @@ public class GetDoujinDetails implements Callback {
 
     private Doujin doujin;
     private DoujinDetailsLoaded doujinDetailsLoaded;
+    private Context context;
+
+    public GetDoujinDetails(Context context) {
+        this.context = context;
+    }
 
     public void loadDoujinDetails(DoujinDetailsLoaded doujinDetailsLoaded, Doujin doujin) {
         this.doujin = doujin;
         this.doujinDetailsLoaded = doujinDetailsLoaded;
-        OkHttpHandler.run(doujin.doujinUrl, this);
+        OkHttpHandler.run(context.getResources().getString(R.string.base_url) + doujin.doujinUrl, this);
     }
 
     @Override
@@ -61,10 +72,24 @@ public class GetDoujinDetails implements Callback {
         for(Element chapter : chapters) {
             Chapter doujinChapter = new Chapter();
             doujinChapter.chapterName = chapter.ownText().trim();
-            doujinChapter.chapterUrl = chapter.attr("href");
+            try {
+                URI uri = new URI(chapter.attr("href"));
+                String out = uri.getPath();
+                if (uri.getQuery() != null)
+                    out += "?" + uri.getQuery();
+                if (uri.getFragment() != null)
+                    out += "#" + uri.getFragment();
+                doujinChapter.chapterUrl = out;
+            } catch (URISyntaxException e) {
+                doujinChapter.chapterUrl = chapter.attr("href");
+            }
+
+
             doujinChapter.chapterDateUpload = document.select("ul.nav-chapters > li > div.media > a").first().select("div > small").text();
             chapterList.add(doujinChapter);
         }
+        Collections.reverse(chapterList);
+
         doujin.chapterList = chapterList;
 
         if(doujinDetailsLoaded != null) {

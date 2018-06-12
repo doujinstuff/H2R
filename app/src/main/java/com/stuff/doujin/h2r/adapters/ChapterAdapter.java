@@ -36,7 +36,8 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     @Override
     public void onBindViewHolder(ChapterAdapter.ChapterViewHolder holder, int position) {
         Chapter chapter = chapterList.get(position);
-        holder.textView.setText(chapter.chapterName);
+        holder.titleView.setText(chapter.chapterName);
+        holder.pageView.setText(chapter.chapterUrl);
     }
 
 
@@ -48,11 +49,13 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     class ChapterViewHolder extends RecyclerView.ViewHolder
     {
 
-        TextView textView;
+        TextView titleView;
+        TextView pageView;
 
         public ChapterViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.chapter_title);
+            titleView = itemView.findViewById(R.id.chapter_title);
+            pageView = itemView.findViewById(R.id.chapter_pages);
         }
     }
 }

@@ -15,14 +15,14 @@ import android.view.ViewGroup;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
-import com.stuff.doujin.h2r.network.DoujinListLoaded;
+import com.stuff.doujin.h2r.network.GetDoujinList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class DoujinListFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, DoujinListLoaded, SwipeRefreshLayout.OnRefreshListener {
+public class DoujinListFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, GetDoujinList.DoujinListLoaded, SwipeRefreshLayout.OnRefreshListener {
 
     public interface DoujinListListener {
         void onDoujinSelected(Doujin doujin);
