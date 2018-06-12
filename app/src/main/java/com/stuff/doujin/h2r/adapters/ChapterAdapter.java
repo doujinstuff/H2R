@@ -37,7 +37,8 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     public void onBindViewHolder(ChapterAdapter.ChapterViewHolder holder, int position) {
         Chapter chapter = chapterList.get(position);
         holder.titleView.setText(chapter.chapterName);
-        holder.pageView.setText(chapter.chapterUrl);
+        if(chapter.pages != null)
+            holder.pageView.setText(String.valueOf(chapter.pages.size()));
     }
 
 

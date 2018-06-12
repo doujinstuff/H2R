@@ -1,9 +1,10 @@
 package com.stuff.doujin.h2r.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,25 +18,29 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.ChapterAdapter;
-import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
-import com.stuff.doujin.h2r.network.GetDoujinDetails;
 import com.stuff.doujin.h2r.network.GetPageList;
+
+import java.util.List;
 
 import me.gujun.android.taggroup.TagGroup;
 
-public class DoujinDetailsFragment extends Fragment {
+public class DoujinDetailsFragment extends Fragment implements GetPageList.ChapterPagesLoaded {
 
     private Doujin doujin;
     private ChapterAdapter chapterAdapter;
+    private GetPageList getPageList;
+    private TextView pageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doujin = (Doujin) getArguments().getSerializable("doujin");
         chapterAdapter = new ChapterAdapter(getContext(), doujin.chapterList);
-        GetPageList getPageList= new GetPageList(getContext());
-        getPageList.loadPageList(doujin.chapterList.get(0).chapterUrl);
+        getPageList = new GetPageList(getContext(), this);
+        if(doujin.doujinPages == null) {
+            getPageList.loadPageList(doujin.chapterList.get(0).chapterUrl, 0);
+        }
     }
 
     @Override
@@ -99,7 +104,40 @@ public class DoujinDetailsFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.chapter_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(chapterAdapter);
+
+        pageView = view.findViewById(R.id.manga_pages);
+        if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
+            pageView.setText(String.valueOf(doujin.doujinPages.size()));
+        }
     }
 
 
+    @Override
+    public void chapterPagesLoaded(int index, List<String> pages) {
+        doujin.chapterList.get(index).pages = pages;
+        if(doujin.doujinPages == null) {
+            doujin.doujinPages = pages;
+        } else {
+            doujin.doujinPages.addAll(pages);
+        }
+        int chapterIndex = index + 1;
+        if(chapterIndex < doujin.chapterList.size()) {
+            getPageList.loadPageList(doujin.chapterList.get(chapterIndex).chapterUrl, chapterIndex);
+        } else {
+            Handler mainHandler = new Handler(Looper.getMainLooper());
+            Runnable myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
+                        pageView.setText(String.valueOf(doujin.doujinPages.size()));
+                    } else {
+                        pageView.setText("0");
+                    }
+
+                    chapterAdapter.notifyDataSetChanged();
+                }
+            };
+            mainHandler.post(myRunnable);
+        }
+    }
 }

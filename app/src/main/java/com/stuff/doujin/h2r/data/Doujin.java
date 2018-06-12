@@ -15,6 +15,7 @@ public class Doujin implements Serializable {
     public String doujinDescription;
     public String doujinStatus;
     public List<Chapter> chapterList;
+    public List<String> doujinPages;
 
     public Doujin(String doujinTitle, String imageId, String doujinUrl) {
         this.doujinTitle = doujinTitle;
