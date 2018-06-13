@@ -50,6 +50,16 @@ public final class GetDoujinList implements Callback {
         String nextPageUrl = null;
         if(!document.select("a#js-linkNext").isEmpty()) {
             nextPageUrl = document.select("a#js-linkNext").first().attr("href");
+            try {
+                URI uri = new URI(nextPageUrl);
+                String out = uri.getPath();
+                if (uri.getQuery() != null)
+                    out += "?" + uri.getQuery();
+                if (uri.getFragment() != null)
+                    out += "#" + uri.getFragment();
+                nextPageUrl = out;
+            } catch (URISyntaxException exception) {
+            }
         }
         Elements elements = document.select("ul.nav-users li.ribbon");
         if(elements.isEmpty()) {
