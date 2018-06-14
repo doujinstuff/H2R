@@ -25,7 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded {
 
-    String baseUrl;
+    String url;
     GetDoujinList getDoujinList;
     GetDoujinDetails getDoujinDetails;
     GetPageList getPageList;
@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getDoujinList = new GetDoujinList(getBaseContext());
-        getDoujinDetails = new GetDoujinDetails(getBaseContext());
-        getPageList = new GetPageList(getBaseContext(), this);
+        getDoujinList = new GetDoujinList();
+        getDoujinDetails = new GetDoujinDetails();
+        getPageList = new GetPageList();
 
         if (savedInstanceState == null) {
             navigationView.getMenu().getItem(0).setChecked(true);
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity
 
             getSupportFragmentManager().beginTransaction().add(R.id.flContainer, fragment).commit();
 
-            baseUrl = getResources().getString(R.string.latest_start_url);
-            getDoujinList.loadDoujinList(this, baseUrl);
+            url = getResources().getString(R.string.latest_start_url);
+            getDoujinList.loadDoujinList(this, url);
         }
     }
 
@@ -101,12 +101,12 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_latest) {
             startLoadingFragment();
-            baseUrl = getResources().getString(R.string.latest_start_url);
-            getDoujinList.loadDoujinList(this, baseUrl);
+            url = getResources().getString(R.string.latest_start_url);
+            getDoujinList.loadDoujinList(this, url);
         } else if (id == R.id.nav_popular) {
             startLoadingFragment();
-            baseUrl = getResources().getString(R.string.popular_start_url);
-            getDoujinList.loadDoujinList(this, baseUrl);
+            url = getResources().getString(R.string.popular_start_url);
+            getDoujinList.loadDoujinList(this, url);
         } else if (id == R.id.nav_favorite) {
 
         } else if (id == R.id.nav_on_hold) {
@@ -138,9 +138,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
-        if(baseUrl != null) {
+        if(url != null) {
             startLoadingFragment();
-            getDoujinList.loadDoujinList(this, baseUrl);
+            getDoujinList.loadDoujinList(this, url);
         }
     }
 
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void doujinDetailsLoaded(Doujin doujin) {
         if(doujin.doujinPages.isEmpty()) {
-            getPageList.loadPageList(doujin, 0);
+            getPageList.loadPageList(doujin, 0, this);
         } else {
             Bundle bundle = new Bundle();
             bundle.putSerializable("doujin", doujin);
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity
     public void chapterPagesLoaded(Doujin doujin, int index, List<String> pages) {
         int chapterIndex = index + 1;
         if(chapterIndex < doujin.chapterList.size()) {
-            getPageList.loadPageList(doujin, chapterIndex);
+            getPageList.loadPageList(doujin, chapterIndex, this);
         } else {
             Bundle bundle = new Bundle();
             bundle.putSerializable("doujin", doujin);

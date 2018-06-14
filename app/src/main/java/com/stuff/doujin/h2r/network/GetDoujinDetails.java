@@ -30,16 +30,12 @@ public class GetDoujinDetails implements Callback {
 
     private Doujin doujin;
     private DoujinDetailsLoaded doujinDetailsLoaded;
-    private Context context;
-
-    public GetDoujinDetails(Context context) {
-        this.context = context;
-    }
+    private String baseUrl = "https://hentai2read.com";
 
     public void loadDoujinDetails(DoujinDetailsLoaded doujinDetailsLoaded, Doujin doujin) {
         this.doujin = doujin;
         this.doujinDetailsLoaded = doujinDetailsLoaded;
-        OkHttpHandler.run(context.getResources().getString(R.string.base_url) + doujin.doujinUrl, this);
+        OkHttpHandler.run(baseUrl + doujin.doujinUrl, this);
     }
 
     @Override

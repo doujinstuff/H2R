@@ -23,22 +23,17 @@ public class GetPageList implements Callback {
         void chapterPagesLoaded(Doujin doujin, int index, List<String> pages);
     }
 
-
-    private Context context;
     private ChapterPagesLoaded chapterPagesLoaded;
     private int chapterIndex;
     private Doujin doujin;
+    private String baseUrl = "https://hentai2read.com";
 
-    public GetPageList(Context context, ChapterPagesLoaded chapterPagesLoaded) {
-        this.context = context;
+    public void loadPageList(Doujin doujin, int chapterIndex, ChapterPagesLoaded chapterPagesLoaded) {
         this.chapterPagesLoaded = chapterPagesLoaded;
-    }
-
-    public void loadPageList(Doujin doujin, int chapterIndex) {
         this.chapterIndex = chapterIndex;
         this.doujin = doujin;
         String url = doujin.chapterList.get(chapterIndex).chapterUrl;
-        OkHttpHandler.run(context.getResources().getString(R.string.base_url) + url, this);
+        OkHttpHandler.run(baseUrl + url, this);
     }
 
     @Override

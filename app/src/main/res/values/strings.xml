@@ -13,6 +13,7 @@
 
     <!-- String URLs -->
     <string name="base_url">https://hentai2read.com</string>
+    <string name="base_image_url">https://img1.hentaicdn.com/hentai/cover</string>
     <string name="latest_start_url">/latest/0</string>
     <string name="popular_start_url">/hentai-list/all/any/all/most-popular/0</string>
 

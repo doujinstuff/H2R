@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Doujin implements Serializable {
-    public String baseCoverUrl = "https://img1.hentaicdn.com/hentai/cover/";
+    public String baseCoverUrl = "https://img1.hentaicdn.com/hentai/cover";
     public String imageId;
     public String imageUrl;
     public String doujinTitle;
@@ -20,7 +20,7 @@ public class Doujin implements Serializable {
 
     public Doujin(String doujinTitle, String imageId, String doujinUrl) {
         this.doujinTitle = doujinTitle;
-        this.imageUrl = baseCoverUrl + "_S" + imageId + ".jpg";
+        this.imageUrl = baseCoverUrl + "/_S" + imageId + ".jpg";
         this.imageId = imageId;
         this.doujinUrl = doujinUrl;
     }
