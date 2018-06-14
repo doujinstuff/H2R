@@ -17,15 +17,18 @@ import com.stuff.doujin.h2r.fragments.DoujinListFragment;
 import com.stuff.doujin.h2r.fragments.LoadingFragment;
 import com.stuff.doujin.h2r.network.GetDoujinDetails;
 import com.stuff.doujin.h2r.network.GetDoujinList;
+import com.stuff.doujin.h2r.network.GetPageList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded {
+        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded {
 
     String baseUrl;
     GetDoujinList getDoujinList;
     GetDoujinDetails getDoujinDetails;
+    GetPageList getPageList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity
 
         getDoujinList = new GetDoujinList(getBaseContext());
         getDoujinDetails = new GetDoujinDetails(getBaseContext());
+        getPageList = new GetPageList(getBaseContext(), this);
 
         if (savedInstanceState == null) {
             navigationView.getMenu().getItem(0).setChecked(true);
@@ -162,12 +166,32 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void doujinDetailsLoaded(Doujin doujin) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("doujin", doujin);
+        if(doujin.doujinPages.isEmpty()) {
+            getPageList.loadPageList(doujin, 0);
+        } else {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("doujin", doujin);
 
-        DoujinDetailsFragment fragment = new DoujinDetailsFragment();
-        fragment.setArguments(bundle);
+            DoujinDetailsFragment fragment = new DoujinDetailsFragment();
+            fragment.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+        }
+    }
+
+    @Override
+    public void chapterPagesLoaded(Doujin doujin, int index, List<String> pages) {
+        int chapterIndex = index + 1;
+        if(chapterIndex < doujin.chapterList.size()) {
+            getPageList.loadPageList(doujin, chapterIndex);
+        } else {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("doujin", doujin);
+
+            DoujinDetailsFragment fragment = new DoujinDetailsFragment();
+            fragment.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+        }
     }
 }

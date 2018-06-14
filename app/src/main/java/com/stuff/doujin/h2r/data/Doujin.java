@@ -1,6 +1,7 @@
 package com.stuff.doujin.h2r.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Doujin implements Serializable {
@@ -15,7 +16,7 @@ public class Doujin implements Serializable {
     public String doujinDescription;
     public String doujinStatus;
     public List<Chapter> chapterList;
-    public List<String> doujinPages;
+    public List<String> doujinPages = new ArrayList<>();
 
     public Doujin(String doujinTitle, String imageId, String doujinUrl) {
         this.doujinTitle = doujinTitle;

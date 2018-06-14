@@ -20,21 +20,24 @@ import okhttp3.Response;
 public class GetPageList implements Callback {
 
     public interface ChapterPagesLoaded {
-        void chapterPagesLoaded(int index, List<String> pages);
+        void chapterPagesLoaded(Doujin doujin, int index, List<String> pages);
     }
 
 
     private Context context;
     private ChapterPagesLoaded chapterPagesLoaded;
     private int chapterIndex;
+    private Doujin doujin;
 
     public GetPageList(Context context, ChapterPagesLoaded chapterPagesLoaded) {
         this.context = context;
         this.chapterPagesLoaded = chapterPagesLoaded;
     }
 
-    public void loadPageList(String url, int chapterIndex) {
+    public void loadPageList(Doujin doujin, int chapterIndex) {
         this.chapterIndex = chapterIndex;
+        this.doujin = doujin;
+        String url = doujin.chapterList.get(chapterIndex).chapterUrl;
         OkHttpHandler.run(context.getResources().getString(R.string.base_url) + url, this);
     }
 
@@ -52,7 +55,9 @@ public class GetPageList implements Callback {
         data = data.substring(data.indexOf("[") + 1, data.indexOf("]"));
         List<String> pages = new ArrayList(Arrays.asList(data.split(",")));
         if(chapterPagesLoaded != null) {
-            chapterPagesLoaded.chapterPagesLoaded(chapterIndex, pages);
+            doujin.chapterList.get(chapterIndex).pages = pages;
+            doujin.doujinPages.addAll(pages);
+            chapterPagesLoaded.chapterPagesLoaded(doujin, chapterIndex, pages);
         }
     }
 }

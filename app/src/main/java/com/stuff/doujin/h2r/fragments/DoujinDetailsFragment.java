@@ -25,11 +25,10 @@ import java.util.List;
 
 import me.gujun.android.taggroup.TagGroup;
 
-public class DoujinDetailsFragment extends Fragment implements GetPageList.ChapterPagesLoaded {
+public class DoujinDetailsFragment extends Fragment {
 
     private Doujin doujin;
     private ChapterAdapter chapterAdapter;
-    private GetPageList getPageList;
     private TextView pageView;
 
     @Override
@@ -37,10 +36,6 @@ public class DoujinDetailsFragment extends Fragment implements GetPageList.Chapt
         super.onCreate(savedInstanceState);
         doujin = (Doujin) getArguments().getSerializable("doujin");
         chapterAdapter = new ChapterAdapter(getContext(), doujin.chapterList);
-        getPageList = new GetPageList(getContext(), this);
-        if(doujin.doujinPages == null) {
-            getPageList.loadPageList(doujin.chapterList.get(0).chapterUrl, 0);
-        }
     }
 
     @Override
@@ -108,36 +103,6 @@ public class DoujinDetailsFragment extends Fragment implements GetPageList.Chapt
         pageView = view.findViewById(R.id.manga_pages);
         if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
             pageView.setText(String.valueOf(doujin.doujinPages.size()));
-        }
-    }
-
-
-    @Override
-    public void chapterPagesLoaded(int index, List<String> pages) {
-        doujin.chapterList.get(index).pages = pages;
-        if(doujin.doujinPages == null) {
-            doujin.doujinPages = pages;
-        } else {
-            doujin.doujinPages.addAll(pages);
-        }
-        int chapterIndex = index + 1;
-        if(chapterIndex < doujin.chapterList.size()) {
-            getPageList.loadPageList(doujin.chapterList.get(chapterIndex).chapterUrl, chapterIndex);
-        } else {
-            Handler mainHandler = new Handler(Looper.getMainLooper());
-            Runnable myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
-                        pageView.setText(String.valueOf(doujin.doujinPages.size()));
-                    } else {
-                        pageView.setText("0");
-                    }
-
-                    chapterAdapter.notifyDataSetChanged();
-                }
-            };
-            mainHandler.post(myRunnable);
         }
     }
 }
