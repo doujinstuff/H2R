@@ -6,9 +6,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.stuff.doujin.h2r.data.Doujin;
@@ -23,12 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded {
+        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded, SearchView.OnQueryTextListener {
 
     String url;
     GetDoujinList getDoujinList;
     GetDoujinDetails getDoujinDetails;
     GetPageList getPageList;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        searchView = findViewById(R.id.search_bar);
+        searchView.setOnQueryTextListener(this);
 
         getDoujinList = new GetDoujinList();
         getDoujinDetails = new GetDoujinDetails();
@@ -86,7 +92,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_show_search) {
+            if(searchView.getVisibility() == View.VISIBLE) {
+                searchView.setVisibility(View.GONE);
+            } else {
+                searchView.setVisibility(View.VISIBLE);
+            }
             return true;
         }
 
@@ -195,5 +206,19 @@ public class MainActivity extends AppCompatActivity
 
             getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
         }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        String searchQuery = "/hentai-list/search/" + query + "/all/name-az/1/";
+        startLoadingFragment();
+        getDoujinList.loadDoujinList(this, searchQuery);
+        searchView.setVisibility(View.GONE);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }
