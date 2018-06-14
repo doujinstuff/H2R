@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.ChapterAdapter;
+import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
 import com.stuff.doujin.h2r.network.GetPageList;
 
@@ -25,16 +27,21 @@ import java.util.List;
 
 import me.gujun.android.taggroup.TagGroup;
 
-public class DoujinDetailsFragment extends Fragment {
+public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener {
 
     private Doujin doujin;
-    private ChapterAdapter chapterAdapter;
+    private DoujinAdapter doujinAdapter;
+    private DoujinListFragment.DoujinListListener relatedDoujinListListener;
+
+    public void setDoujinListListener(DoujinListFragment.DoujinListListener doujinListListener) {
+        this.relatedDoujinListListener = doujinListListener;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         doujin = (Doujin) getArguments().getSerializable("doujin");
-        chapterAdapter = new ChapterAdapter(getContext(), doujin.chapterList);
+        doujinAdapter = new DoujinAdapter(getContext(), doujin.relatedDoujinList);
     }
 
     @Override
@@ -100,5 +107,21 @@ public class DoujinDetailsFragment extends Fragment {
         if(doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
         }
+
+        RecyclerView recyclerView = view.findViewById(R.id.doujin_grid);
+        recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 4));
+        doujinAdapter.setClickListener(this);
+        recyclerView.setAdapter(doujinAdapter);
+    }
+
+    @Override
+    public void onDoujinClick(Doujin doujin) {
+        if(relatedDoujinListListener != null) {
+            relatedDoujinListListener.onDoujinSelected(doujin);
+        }
+    }
+
+    @Override
+    public void onBottomReached() {
     }
 }

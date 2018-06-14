@@ -53,6 +53,7 @@ public class GetDoujinDetails implements Callback {
         doujin.doujinArtist = infoElement.select("li:contains(Artist) > a").text();
         doujin.doujinDescription = infoElement.select("li:contains(Storyline) > p").text();
         doujin.doujinStatus = infoElement.select("li:contains(Status) > a").text();
+        doujin.relatedDoujinList.clear();
 
         Elements genres = infoElement.select("li:contains(Category) > a, li:contains(Content) > a");
         for(Element genre : genres) {
@@ -64,7 +65,7 @@ public class GetDoujinDetails implements Callback {
         }
 
         Elements chapters = document.select("ul.nav-chapters > li > div.media > a");
-        List<Chapter> chapterList = new ArrayList<>();
+        ArrayList<Chapter> chapterList = new ArrayList<>();
         for(Element chapter : chapters) {
             Chapter doujinChapter = new Chapter();
             doujinChapter.chapterName = chapter.ownText().trim();
@@ -84,6 +85,31 @@ public class GetDoujinDetails implements Callback {
             doujinChapter.chapterDateUpload = document.select("ul.nav-chapters > li > div.media > a").first().select("div > small").text();
             chapterList.add(doujinChapter);
         }
+
+        Elements relatedDoujins = document.select("div.col-xs-12 > div.block-content > ul.nav-users > li");
+        for(Element relatedDoujin : relatedDoujins) {
+            Element e = relatedDoujin.selectFirst("a");
+            String imageId = e.attr("data-mid");
+            String title = e.attr("data-title");
+            if(title.indexOf(" [") > 0) {
+                title = title.substring(0, title.indexOf(" [")).trim();
+            }
+            String doujinUrl = e.attr("href");
+            try {
+                URI uri = new URI(doujinUrl);
+                String out = uri.getPath();
+                if (uri.getQuery() != null)
+                    out += "?" + uri.getQuery();
+                if (uri.getFragment() != null)
+                    out += "#" + uri.getFragment();
+                doujinUrl = out;
+            } catch (URISyntaxException exception) {
+            }
+            if(!doujin.imageId.equals(imageId)) {
+                doujin.relatedDoujinList.add(new Doujin(title, imageId, doujinUrl));
+            }
+        }
+
         Collections.reverse(chapterList);
 
         doujin.chapterList = chapterList;

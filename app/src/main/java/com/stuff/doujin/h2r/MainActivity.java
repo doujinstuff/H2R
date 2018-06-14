@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity
             bundle.putSerializable("doujin", doujin);
 
             DoujinDetailsFragment fragment = new DoujinDetailsFragment();
+            fragment.setDoujinListListener(this);
             fragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
@@ -189,6 +190,7 @@ public class MainActivity extends AppCompatActivity
             bundle.putSerializable("doujin", doujin);
 
             DoujinDetailsFragment fragment = new DoujinDetailsFragment();
+            fragment.setDoujinListListener(this);
             fragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();

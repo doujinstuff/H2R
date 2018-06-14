@@ -5,6 +5,10 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundDark">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <android.support.constraint.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
@@ -237,7 +241,15 @@
             app:atg_borderColor="@color/md_blue_A400"
             app:atg_textColor="@color/md_blue_A400" />
 
-    </android.support.constraint.ConstraintLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/doujin_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="140dp"
+            app:layout_constraintTop_toBottomOf="@id/manga_genres_tags"
+            style="@style/AppTheme.GridView" />
 
+    </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
 </android.support.v4.widget.SwipeRefreshLayout>
