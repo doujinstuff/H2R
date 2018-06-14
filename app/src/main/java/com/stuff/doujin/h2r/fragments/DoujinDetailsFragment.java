@@ -29,7 +29,6 @@ public class DoujinDetailsFragment extends Fragment {
 
     private Doujin doujin;
     private ChapterAdapter chapterAdapter;
-    private TextView pageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +70,12 @@ public class DoujinDetailsFragment extends Fragment {
             ((TextView) view.findViewById(R.id.manga_status)).setText(unknownText);
         }
 
+        if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
+            ((TextView) view.findViewById(R.id.manga_pages)).setText(String.valueOf(doujin.doujinPages.size()));
+        } else {
+            ((TextView) view.findViewById(R.id.manga_pages)).setText("0");
+        }
+
         if(doujin.imageUrl != null && !doujin.imageUrl.isEmpty()) {
             RequestOptions options = new RequestOptions();
             options.centerCrop();
@@ -94,15 +99,6 @@ public class DoujinDetailsFragment extends Fragment {
 
         if(doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
-        }
-
-        RecyclerView recyclerView = view.findViewById(R.id.chapter_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(chapterAdapter);
-
-        pageView = view.findViewById(R.id.manga_pages);
-        if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
-            pageView.setText(String.valueOf(doujin.doujinPages.size()));
         }
     }
 }
