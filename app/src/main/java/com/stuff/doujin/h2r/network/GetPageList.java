@@ -48,7 +48,9 @@ public class GetPageList implements Callback {
         String data = document.select("section > div > script").first().dataNodes().get(0).getWholeData();
         data = data.substring(data.indexOf("images"));
         data = data.substring(data.indexOf("[") + 1, data.indexOf("]"));
+        data = data.trim().replace("\\/", "/").replace("\"", "");
         List<String> pages = new ArrayList(Arrays.asList(data.split(",")));
+
         if(chapterPagesLoaded != null) {
             doujin.chapterList.get(chapterIndex).pages = pages;
             doujin.doujinPages.addAll(pages);

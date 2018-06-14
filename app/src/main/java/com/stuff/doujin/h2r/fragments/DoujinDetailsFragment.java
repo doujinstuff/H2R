@@ -1,5 +1,6 @@
 package com.stuff.doujin.h2r.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.stuff.doujin.h2r.DoujinReaderActivity;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.ChapterAdapter;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
@@ -96,7 +98,9 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             doujinCover.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getContext(), doujin.chapterList.get(0).chapterName, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getContext(), DoujinReaderActivity.class);
+                    intent.putExtra("PAGES", doujin.doujinPages);
+                    startActivity(intent);
                 }
             });
 

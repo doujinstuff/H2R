@@ -75,4 +75,6 @@
 
     <color name="md_teal_500">#009688</color>
 
+    <color name="black_overlay">#66000000</color>
+
 </resources>

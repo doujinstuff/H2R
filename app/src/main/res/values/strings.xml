@@ -17,4 +17,8 @@
     <string name="latest_start_url">/latest/0</string>
     <string name="popular_start_url">/hentai-list/all/any/all/most-popular/0</string>
 
+    <string name="title_activity_doujin_reader">DoujinReaderActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>
