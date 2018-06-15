@@ -2,9 +2,7 @@ package com.stuff.doujin.h2r;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +10,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.stuff.doujin.h2r.data.Doujin;
@@ -28,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded, SearchView.OnQueryTextListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded, SearchView.OnQueryTextListener, DoujinDetailsFragment.SearchDetailsListener {
 
     String url;
     GetDoujinList getDoujinList;
@@ -62,7 +58,7 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().add(R.id.flContainer, fragment).commit();
 
             url = getResources().getString(R.string.latest_start_url);
-            getDoujinList.loadDoujinList(this, url);
+            getDoujinList.loadDoujinList(this, url, true);
         }
     }
 
@@ -106,11 +102,11 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_latest) {
             startLoadingFragment();
             url = getResources().getString(R.string.latest_start_url);
-            getDoujinList.loadDoujinList(this, url);
+            getDoujinList.loadDoujinList(this, url, true);
         } else if (id == R.id.nav_popular) {
             startLoadingFragment();
             url = getResources().getString(R.string.popular_start_url);
-            getDoujinList.loadDoujinList(this, url);
+            getDoujinList.loadDoujinList(this, url, true);
         } else if (id == R.id.nav_favorite) {
 
         } else if (id == R.id.nav_on_hold) {
@@ -137,14 +133,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBottomReached(DoujinListFragment doujinListFragment) {
-        getDoujinList.loadDoujinList(doujinListFragment, doujinListFragment.getNextPageUrl());
+        getDoujinList.loadDoujinList(doujinListFragment, doujinListFragment.getNextPageUrl(), false);
     }
 
     @Override
     public void onRefresh() {
         if(url != null) {
             startLoadingFragment();
-            getDoujinList.loadDoujinList(this, url);
+            getDoujinList.loadDoujinList(this, url, true);
         }
     }
 
@@ -178,6 +174,7 @@ public class MainActivity extends AppCompatActivity
 
             DoujinDetailsFragment fragment = new DoujinDetailsFragment();
             fragment.setDoujinListListener(this);
+            fragment.setSearchDetailsListener(this);
             fragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
@@ -195,6 +192,7 @@ public class MainActivity extends AppCompatActivity
 
             DoujinDetailsFragment fragment = new DoujinDetailsFragment();
             fragment.setDoujinListListener(this);
+            fragment.setSearchDetailsListener(this);
             fragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
@@ -205,12 +203,37 @@ public class MainActivity extends AppCompatActivity
     public boolean onQueryTextSubmit(String query) {
         String searchQuery = "/hentai-list/search/" + query + "/all/name-az/1/";
         startLoadingFragment();
-        getDoujinList.loadDoujinList(this, searchQuery);
+        getDoujinList.loadDoujinList(this, searchQuery, true);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        if(newText.isEmpty()) {
+            startLoadingFragment();
+            getDoujinList.loadDoujinList(this, url, true);
+        }
         return false;
+    }
+
+    @Override
+    public void onAuthorSearch(String author) {
+        String searchUrl = "/hentai-list/author/" + author;
+        startLoadingFragment();
+        getDoujinList.loadDoujinList(this, searchUrl.replaceAll(" ", "-"), true);
+    }
+
+    @Override
+    public void onArtistSearch(String artist) {
+        String searchUrl = "/hentai-list/artist/" + artist;
+        startLoadingFragment();
+        getDoujinList.loadDoujinList(this, searchUrl.replaceAll(" ", "-"), true);
+    }
+
+    @Override
+    public void onCategorySearch(String category) {
+        String searchUrl = "/hentai-list/category/" + category;
+        startLoadingFragment();
+        getDoujinList.loadDoujinList(this, searchUrl.replaceAll(" ", "%20"), true);
     }
 }

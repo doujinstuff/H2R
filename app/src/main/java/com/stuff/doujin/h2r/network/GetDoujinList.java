@@ -30,7 +30,10 @@ public final class GetDoujinList implements Callback {
     private DoujinListLoaded doujinListLoaded;
     private String baseUrl = "https://hentai2read.com";
 
-    public void loadDoujinList(DoujinListLoaded doujinListLoaded, String url) {
+    public void loadDoujinList(DoujinListLoaded doujinListLoaded, String url, boolean clearList) {
+        if(clearList) {
+            doujinList.clear();
+        }
         this.doujinListLoaded = doujinListLoaded;
         OkHttpHandler.run(baseUrl + url, this);
     }

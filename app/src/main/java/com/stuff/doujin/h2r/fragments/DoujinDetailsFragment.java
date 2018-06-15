@@ -2,41 +2,62 @@ package com.stuff.doujin.h2r.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.stuff.doujin.h2r.DoujinReaderActivity;
 import com.stuff.doujin.h2r.R;
-import com.stuff.doujin.h2r.adapters.ChapterAdapter;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
-import com.stuff.doujin.h2r.network.GetPageList;
 
-import java.util.List;
+import org.w3c.dom.Text;
 
 import me.gujun.android.taggroup.TagGroup;
 
-public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener {
+public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, View.OnClickListener, TagGroup.OnTagClickListener {
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.manga_artist) {
+            searchDetailsListenerListener.onArtistSearch(((TextView) v).getText().toString());
+        } else if(v.getId() == R.id.manga_author) {
+            searchDetailsListenerListener.onAuthorSearch(((TextView) v).getText().toString());
+        }
+    }
+
+    @Override
+    public void onTagClick(String tag) {
+        searchDetailsListenerListener.onCategorySearch(tag);
+    }
+
+    public interface SearchDetailsListener {
+        void onAuthorSearch(String author);
+
+        void onArtistSearch(String artist);
+
+        void onCategorySearch(String category);
+    }
 
     private Doujin doujin;
     private DoujinAdapter doujinAdapter;
     private DoujinListFragment.DoujinListListener relatedDoujinListListener;
+    private SearchDetailsListener searchDetailsListenerListener;
 
     public void setDoujinListListener(DoujinListFragment.DoujinListListener doujinListListener) {
         this.relatedDoujinListListener = doujinListListener;
+    }
+
+    public void setSearchDetailsListener(SearchDetailsListener searchDetailsListener) {
+        this.searchDetailsListenerListener = searchDetailsListener;
     }
 
     @Override
@@ -63,12 +84,14 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
 
         if(doujin.doujinAuthor != null && !doujin.doujinAuthor.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_author)).setText(doujin.doujinAuthor);
+            view.findViewById(R.id.manga_author).setOnClickListener(this);
         } else {
             ((TextView) view.findViewById(R.id.manga_author)).setText(unknownText);
         }
 
         if(doujin.doujinArtist != null && !doujin.doujinArtist.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_artist)).setText(doujin.doujinArtist);
+            view.findViewById(R.id.manga_artist).setOnClickListener(this);
         } else {
             ((TextView) view.findViewById(R.id.manga_artist)).setText(unknownText);
         }
@@ -110,6 +133,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
 
         if(doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
+            ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setOnTagClickListener(this);
         }
 
         RecyclerView recyclerView = view.findViewById(R.id.doujin_grid);
