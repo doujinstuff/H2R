@@ -1,9 +1,7 @@
 package com.stuff.doujin.h2r.network;
 
-import android.content.Context;
-
-import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.data.Doujin;
+import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,7 +12,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -29,6 +26,11 @@ public final class GetDoujinList implements Callback {
     private ArrayList<Doujin> doujinList = new ArrayList<>();
     private DoujinListLoaded doujinListLoaded;
     private String baseUrl = "https://hentai2read.com";
+    private DoujinViewModel doujinViewModel;
+
+    public GetDoujinList(DoujinViewModel doujinViewModel) {
+        this.doujinViewModel = doujinViewModel;
+    }
 
     public void loadDoujinList(DoujinListLoaded doujinListLoaded, String url, boolean clearList) {
         if(clearList) {
@@ -93,7 +95,13 @@ public final class GetDoujinList implements Callback {
             if(title.indexOf(" [") > 0) {
                 title = title.substring(0, title.indexOf(" [")).trim();
             }
-            doujinList.add(new Doujin(title, imageId, doujinUrl));
+
+            Doujin doujin = doujinViewModel.findDoujin(imageId);
+            if(doujin == null) {
+                doujinList.add(new Doujin(title, imageId, doujinUrl));
+            } else {
+                doujinList.add(doujin);
+            }
         }
 
         if(doujinListLoaded != null) {

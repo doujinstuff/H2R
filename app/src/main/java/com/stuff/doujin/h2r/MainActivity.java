@@ -1,6 +1,10 @@
 package com.stuff.doujin.h2r;
 
+
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +23,7 @@ import com.stuff.doujin.h2r.fragments.LoadingFragment;
 import com.stuff.doujin.h2r.network.GetDoujinDetails;
 import com.stuff.doujin.h2r.network.GetDoujinList;
 import com.stuff.doujin.h2r.network.GetPageList;
+import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +35,8 @@ public class MainActivity extends AppCompatActivity
     GetDoujinList getDoujinList;
     GetDoujinDetails getDoujinDetails;
     GetPageList getPageList;
+    DoujinViewModel doujinViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +54,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getDoujinList = new GetDoujinList();
+        doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
+        getDoujinList = new GetDoujinList(doujinViewModel);
         getDoujinDetails = new GetDoujinDetails();
         getPageList = new GetPageList();
+
 
         if (savedInstanceState == null) {
             navigationView.getMenu().getItem(0).setChecked(true);
@@ -108,7 +117,13 @@ public class MainActivity extends AppCompatActivity
             url = getResources().getString(R.string.popular_start_url);
             getDoujinList.loadDoujinList(this, url, true);
         } else if (id == R.id.nav_favorite) {
-
+            doujinViewModel.getAllDoujins().observe(this, new Observer<List<Doujin>>() {
+                @Override
+                public void onChanged(@Nullable final List<Doujin> doujins) {
+                    // Update the cached copy of the words in the adapter.
+                    doujinListLoaded(new ArrayList<>(doujins), null);
+                }
+            });
         } else if (id == R.id.nav_on_hold) {
 
         } else if (id == R.id.nav_plan_to_read) {
