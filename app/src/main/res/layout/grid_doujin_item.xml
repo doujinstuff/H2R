@@ -16,6 +16,21 @@
             android:background="@color/backgroundDark" />
 
         <TextView
+            android:id="@+id/doujin_bookmark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@string/font_roboto_regular"
+            android:layout_gravity="top"
+            android:lineSpacingExtra="-4dp"
+            android:maxLines="2"
+            android:padding="8dp"
+            android:background="@color/textColorHintLight"
+            android:textColor="@color/textColorPrimaryDark"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
             android:id="@+id/doujin_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

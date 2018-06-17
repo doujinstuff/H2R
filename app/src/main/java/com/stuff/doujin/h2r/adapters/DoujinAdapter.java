@@ -46,7 +46,24 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
     @Override
     public void onBindViewHolder(DoujinViewHolder holder, int position) {
         Doujin doujin = doujinList.get(position);
-        holder.textView.setText(doujin.doujinTitle);
+        holder.titleTextView.setText(doujin.doujinTitle);
+        if(doujin.doujinBookmark == Doujin.Bookmark.NONE) {
+            holder.bookmarkTextView.setVisibility(View.GONE);
+        } else {
+            holder.bookmarkTextView.setVisibility(View.VISIBLE);
+            if(doujin.doujinBookmark == Doujin.Bookmark.COMPLETED){
+                holder.bookmarkTextView.setText("Completed");
+            }
+            if(doujin.doujinBookmark == Doujin.Bookmark.ON_HOLD){
+                holder.bookmarkTextView.setText("On Hold");
+            }
+            if(doujin.doujinBookmark == Doujin.Bookmark.FAVORITE){
+                holder.bookmarkTextView.setText("Favorite");
+            }
+            if(doujin.doujinBookmark == Doujin.Bookmark.PLAN_TO_READ){
+                holder.bookmarkTextView.setText("Plan To Read");
+            }
+        }
 
         RequestOptions options = new RequestOptions();
         options.centerCrop();
@@ -72,13 +89,17 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
     {
 
         ImageView imageView;
-        TextView textView;
+        TextView titleTextView;
+        TextView bookmarkTextView;
 
         public DoujinViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.doujin_title);
+            titleTextView = itemView.findViewById(R.id.doujin_title);
+            bookmarkTextView = itemView.findViewById(R.id.doujin_bookmark);
+
             Typeface type = Typeface.createFromAsset(context.getAssets(),"fonts/PTSans-NarrowBold.ttf");
-            textView.setTypeface(type);
+            titleTextView.setTypeface(type);
+            bookmarkTextView.setTypeface(type);
 
             imageView = itemView.findViewById(R.id.doujin_image);
             itemView.setOnClickListener(this);
