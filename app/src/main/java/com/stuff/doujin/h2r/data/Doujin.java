@@ -130,6 +130,8 @@ public class Doujin implements Serializable {
             obj.put("title", doujinTitle);
             obj.put("url", doujinUrl);
             obj.put("bookmark", doujinBookmark);
+            obj.put("bookmark", doujinBookmark);
+            obj.put("bookmark_date", doujinBookmarkDate);
         } catch (JSONException e) {
         }
         return obj;

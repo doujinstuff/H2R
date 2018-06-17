@@ -45,6 +45,8 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     private DoujinListFragment.DoujinListListener relatedDoujinListListener;
     private SearchDetailsListener searchDetailsListenerListener;
     private TextView currentPageView;
+    private TextView bookmarkDateView;
+    private TextView bookmarkDateLabelView;
 
     public void setDoujinListListener(DoujinListFragment.DoujinListListener doujinListListener) {
         this.relatedDoujinListListener = doujinListListener;
@@ -111,13 +113,15 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             ((TextView) view.findViewById(R.id.manga_pages)).setText("0");
         }
 
+        bookmarkDateView = view.findViewById(R.id.manga_bookmark_date);
+        bookmarkDateLabelView = view.findViewById(R.id.manga_bookmark_date_label);
         if(doujin.doujinBookmarkDate != 0L) {
-            ((TextView) view.findViewById(R.id.manga_bookmark_date)).setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinBookmarkDate));
-            view.findViewById(R.id.manga_bookmark_date).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.manga_bookmark_date_label).setVisibility(View.VISIBLE);
+            bookmarkDateView.setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinBookmarkDate));
+            bookmarkDateView.setVisibility(View.VISIBLE);
+            bookmarkDateLabelView.setVisibility(View.VISIBLE);
         } else {
-            view.findViewById(R.id.manga_bookmark_date).setVisibility(View.GONE);
-            view.findViewById(R.id.manga_bookmark_date_label).setVisibility(View.GONE);
+            bookmarkDateView.setVisibility(View.GONE);
+            bookmarkDateLabelView.setVisibility(View.GONE);
         }
 
         if(doujin.imageUrl != null && !doujin.imageUrl.isEmpty()) {
@@ -196,8 +200,13 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             doujin.doujinBookmark = position;
             doujin.doujinBookmarkDate = System.currentTimeMillis();
             doujinViewModel.insert(doujin);
+            bookmarkDateView.setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinBookmarkDate));
+            bookmarkDateView.setVisibility(View.VISIBLE);
+            bookmarkDateLabelView.setVisibility(View.VISIBLE);
         } else {
             doujinViewModel.delete(doujin);
+            bookmarkDateView.setVisibility(View.GONE);
+            bookmarkDateLabelView.setVisibility(View.GONE);
         }
     }
 
