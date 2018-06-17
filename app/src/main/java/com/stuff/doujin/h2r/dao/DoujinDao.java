@@ -27,7 +27,7 @@ public interface DoujinDao {
     List<Doujin> getAllDoujinsForExport();
 
 
-    @Query("SELECT * from doujin_table WHERE doujin_bookmark= :bookmarkType")
+    @Query("SELECT * from doujin_table WHERE doujin_bookmark= :bookmarkType ORDER BY doujin_bookmark_date ASC")
     LiveData<List<Doujin>> getDoujinByBookmark(int bookmarkType);
 
     @Query("SELECT * FROM doujin_table WHERE doujin_id = :doujinId LIMIT 1")

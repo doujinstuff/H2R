@@ -1,6 +1,5 @@
 package com.stuff.doujin.h2r.fragments;
 
-import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,7 +25,8 @@ import java.util.Set;
 public class DoujinListFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, GetDoujinList.DoujinListLoaded, SwipeRefreshLayout.OnRefreshListener {
 
     public void notifyDoujinSetChanged(List<Doujin> doujinList) {
-        this.doujinList.retainAll(doujinList);
+        this.doujinList.clear();
+        this.doujinList.addAll(doujinList);
         doujinAdapter.notifyDataSetChanged();
     }
 
@@ -53,18 +53,11 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if(doujinAdapter != null) {
-            doujinAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         doujinList = (List<Doujin>) getArguments().getSerializable("doujins");
+        doujinSet.clear();
         doujinSet.addAll(doujinList);
         nextPageUrl = getArguments().getString("nextPageUrl");
         doujinAdapter = new DoujinAdapter(getContext(), doujinList);
@@ -82,13 +75,6 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 4));
         doujinAdapter.setClickListener(this);
         recyclerView.setAdapter(doujinAdapter);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        doujinList.clear();
-        doujinSet.clear();
     }
 
     @Override

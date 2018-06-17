@@ -111,6 +111,15 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             ((TextView) view.findViewById(R.id.manga_pages)).setText("0");
         }
 
+        if(doujin.doujinBookmarkDate != 0L) {
+            ((TextView) view.findViewById(R.id.manga_bookmark_date)).setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinBookmarkDate));
+            view.findViewById(R.id.manga_bookmark_date).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.manga_bookmark_date_label).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.manga_bookmark_date).setVisibility(View.GONE);
+            view.findViewById(R.id.manga_bookmark_date_label).setVisibility(View.GONE);
+        }
+
         if(doujin.imageUrl != null && !doujin.imageUrl.isEmpty()) {
             RequestOptions options = new RequestOptions();
             options.centerCrop();
@@ -185,6 +194,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
         DoujinViewModel doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
         if(position != 0 ) {
             doujin.doujinBookmark = position;
+            doujin.doujinBookmarkDate = System.currentTimeMillis();
             doujinViewModel.insert(doujin);
         } else {
             doujinViewModel.delete(doujin);
@@ -207,6 +217,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
                 currentPageView.setText(String.valueOf(doujin.doujinPage));
 
                 if(doujin.doujinBookmark != 0 ) {
+                    doujin.doujinBookmarkDate = System.currentTimeMillis();
                     doujinViewModel.insert(doujin);
                 }
             }

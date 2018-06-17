@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity
             jsonArray = new JSONArray(builder.toString());
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
-                doujinViewModel.insert(new Doujin(jsonObj.getString("title"), jsonObj.getString("id"), jsonObj.getString("url"), jsonObj.getInt("bookmark")));
+                doujinViewModel.insert(new Doujin(jsonObj.getString("title"), jsonObj.getString("id"), jsonObj.getString("url"), jsonObj.getInt("bookmark"), jsonObj.getLong("bookmark_date")));
             }
         } catch (JSONException e) {
             e.printStackTrace();

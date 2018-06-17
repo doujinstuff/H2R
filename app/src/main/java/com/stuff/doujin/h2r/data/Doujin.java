@@ -54,6 +54,9 @@ public class Doujin implements Serializable {
     @ColumnInfo(name = "doujin_last_updated")
     @Bookmark public long doujinLastUpdated;
 
+    @ColumnInfo(name = "doujin_bookmark_date")
+    public long doujinBookmarkDate;
+
     @Ignore
     public String doujinAuthor;
 
@@ -89,12 +92,13 @@ public class Doujin implements Serializable {
     }
 
     @Ignore
-    public Doujin(String doujinTitle, String doujinId, String doujinUrl, @Bookmark int doujinBookmark) {
+    public Doujin(String doujinTitle, String doujinId, String doujinUrl, @Bookmark int doujinBookmark, long doujinBookmarkDate) {
         this.doujinTitle = doujinTitle;
         this.imageUrl = baseCoverUrl + "/_S" + doujinId + ".jpg";
         this.doujinId = doujinId;
         this.doujinUrl = doujinUrl;
         this.doujinBookmark = doujinBookmark;
+        this.doujinBookmarkDate = doujinBookmarkDate;
     }
 
     @Override
