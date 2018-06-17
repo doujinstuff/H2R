@@ -101,7 +101,7 @@ public final class GetDoujinList implements Callback {
             Doujin doujin = doujinViewModel.findDoujin(imageId);
             if(doujin == null) {
                 doujinList.add(new Doujin(title, imageId, doujinUrl));
-            } else {
+            } else if (doujin.doujinBookmark != Doujin.Bookmark.BLACKLIST){
                 doujinList.add(doujin);
             }
         }
