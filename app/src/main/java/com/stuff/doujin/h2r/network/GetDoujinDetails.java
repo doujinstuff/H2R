@@ -1,8 +1,5 @@
 package com.stuff.doujin.h2r.network;
 
-import android.content.Context;
-
-import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.data.Chapter;
 import com.stuff.doujin.h2r.data.Doujin;
 import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
@@ -17,7 +14,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -111,7 +107,7 @@ public class GetDoujinDetails implements Callback {
                 doujinUrl = out;
             } catch (URISyntaxException exception) {
             }
-            if(!doujin.imageId.equals(imageId)) {
+            if(!doujin.doujinId.equals(imageId)) {
                 Doujin dbDoujin = doujinViewModel.findDoujin(imageId);
                 if(dbDoujin == null) {
                     doujin.relatedDoujinList.add(new Doujin(title, imageId, doujinUrl));

@@ -3,6 +3,7 @@ package com.stuff.doujin.h2r.viewmodels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 
 import com.stuff.doujin.h2r.data.Doujin;
 import com.stuff.doujin.h2r.repositories.DoujinRepository;
@@ -38,6 +39,7 @@ public class DoujinViewModel extends AndroidViewModel {
 
     public Doujin findDoujin(String doujinId) { return repository.findDoujin(doujinId); }
 
+    public void getDoujinsForExport(Context context) {  repository.getDoujinsForExport(context); }
 
     public void insert(Doujin doujin) { repository.insert(doujin); }
 

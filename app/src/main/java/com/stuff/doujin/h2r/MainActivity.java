@@ -1,7 +1,6 @@
 package com.stuff.doujin.h2r;
 
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import com.stuff.doujin.h2r.network.GetPageList;
 import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -99,7 +97,9 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if(id == R.id.action_export_json) {
+            doujinViewModel.getDoujinsForExport(getBaseContext());
+        }
 
         return super.onOptionsItemSelected(item);
     }

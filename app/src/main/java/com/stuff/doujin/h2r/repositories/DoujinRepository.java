@@ -2,12 +2,21 @@ package com.stuff.doujin.h2r.repositories;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.stuff.doujin.h2r.dao.DoujinDao;
 import com.stuff.doujin.h2r.data.Doujin;
 import com.stuff.doujin.h2r.database.DoujinRoomDatabase;
 
+import org.json.JSONArray;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 public class DoujinRepository {
@@ -47,6 +56,10 @@ public class DoujinRepository {
         return doujinDao.findDoujin(doujinId);
     }
 
+    public void getDoujinsForExport (Context context) {
+        new exportAsyncTask(doujinDao, context).execute();
+    }
+
     public void insert (Doujin doujin) {
         new insertAsyncTask(doujinDao).execute(doujin);
     }
@@ -83,5 +96,48 @@ public class DoujinRepository {
             return null;
         }
     }
+
+    private static class exportAsyncTask extends AsyncTask<Void, Void, List<Doujin>> {
+
+        private DoujinDao asyncTaskDao;
+        private Context context;
+
+        exportAsyncTask(DoujinDao dao, Context context) {
+            asyncTaskDao = dao;
+            this.context = context;
+        }
+
+        @Override
+        protected List<Doujin> doInBackground(Void... voids) {
+            return asyncTaskDao.getAllDoujinsForExport();
+        }
+
+        @Override
+        protected void onPostExecute(List<Doujin> exportDoujinList) {
+            File file = new File(context.getExternalFilesDir(null),"H2RExport.json");
+            Writer output = null;
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                } else {
+                    file.delete();
+                    file.createNewFile();
+                }
+                JSONArray jsonArray = new JSONArray();
+                for(Doujin doujin : exportDoujinList) {
+                    jsonArray.put(doujin.getJsonObject());
+                }
+                output = new BufferedWriter(new FileWriter(file));
+                output.write(jsonArray.toString());
+                output.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Error Exporting", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Toast.makeText(context, "Exporting Complete", Toast.LENGTH_LONG).show();
+        }
+    }
+
 
 }
