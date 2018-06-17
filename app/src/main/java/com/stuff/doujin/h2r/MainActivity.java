@@ -1,6 +1,7 @@
 package com.stuff.doujin.h2r;
 
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.stuff.doujin.h2r.network.GetDoujinList;
 import com.stuff.doujin.h2r.network.GetPageList;
 import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity
 
         doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
         getDoujinList = new GetDoujinList(doujinViewModel);
-        getDoujinDetails = new GetDoujinDetails();
+        getDoujinDetails = new GetDoujinDetails(doujinViewModel);
         getPageList = new GetPageList();
 
 
@@ -117,17 +119,44 @@ public class MainActivity extends AppCompatActivity
             url = getResources().getString(R.string.popular_start_url);
             getDoujinList.loadDoujinList(this, url, true);
         } else if (id == R.id.nav_favorite) {
-            doujinViewModel.getAllDoujins().observe(this, new Observer<List<Doujin>>() {
+            startLoadingFragment();
+            doujinViewModel.getFavoriteDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
                 @Override
-                public void onChanged(@Nullable final List<Doujin> doujins) {
-                    // Update the cached copy of the words in the adapter.
-                    doujinListLoaded(new ArrayList<>(doujins), null);
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
                 }
             });
         } else if (id == R.id.nav_on_hold) {
-
+            startLoadingFragment();
+            doujinViewModel.getOnHoldDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
+                @Override
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
+                }
+            });
         } else if (id == R.id.nav_plan_to_read) {
-
+            startLoadingFragment();
+            doujinViewModel.getPlanToReadDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
+                @Override
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
+                }
+            });
         } else if (id == R.id.nav_settings) {
 
         }
@@ -160,9 +189,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void doujinListLoaded(ArrayList<Doujin> doujinList, String nextPageUrl) {
+    public DoujinListFragment doujinListLoaded(List<Doujin> doujinList, String nextPageUrl) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("doujins", doujinList);
+        bundle.putSerializable("doujins", (Serializable) doujinList);
         bundle.putString("nextPageUrl", nextPageUrl);
 
         DoujinListFragment fragment = new DoujinListFragment();
@@ -170,6 +199,7 @@ public class MainActivity extends AppCompatActivity
         fragment.setArguments(bundle);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.flContainer, fragment).commit();
+        return fragment;
     }
 
     private void startLoadingFragment() {

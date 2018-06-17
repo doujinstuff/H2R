@@ -1,5 +1,6 @@
 package com.stuff.doujin.h2r.fragments;
 
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,6 +25,11 @@ import java.util.Set;
 
 public class DoujinListFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, GetDoujinList.DoujinListLoaded, SwipeRefreshLayout.OnRefreshListener {
 
+    public void notifyDoujinSetChanged(List<Doujin> doujinList) {
+        this.doujinList.retainAll(doujinList);
+        doujinAdapter.notifyDataSetChanged();
+    }
+
     public interface DoujinListListener {
         void onDoujinSelected(Doujin doujin);
 
@@ -47,10 +53,18 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(doujinAdapter != null) {
+            doujinAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        doujinList = (ArrayList<Doujin>) getArguments().getSerializable("doujins");
+        doujinList = (List<Doujin>) getArguments().getSerializable("doujins");
         doujinSet.addAll(doujinList);
         nextPageUrl = getArguments().getString("nextPageUrl");
         doujinAdapter = new DoujinAdapter(getContext(), doujinList);
@@ -99,7 +113,7 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
     }
 
     @Override
-    public void doujinListLoaded(ArrayList<Doujin> doujinList, String nextPageUrl) {
+    public DoujinListFragment doujinListLoaded(List<Doujin> doujinList, String nextPageUrl) {
         this.nextPageUrl = nextPageUrl;
         List<Doujin> tempDoujinList = new ArrayList<>();
         tempDoujinList.addAll(doujinList);
@@ -118,5 +132,6 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
             }
         };
         mainHandler.post(myRunnable);
+        return this;
     }
 }

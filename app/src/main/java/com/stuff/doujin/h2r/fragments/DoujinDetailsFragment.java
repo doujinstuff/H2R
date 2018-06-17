@@ -1,5 +1,6 @@
 package com.stuff.doujin.h2r.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,12 +22,13 @@ import com.stuff.doujin.h2r.DoujinReaderActivity;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
+import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import org.w3c.dom.Text;
 
 import me.gujun.android.taggroup.TagGroup;
 
-public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, View.OnClickListener, TagGroup.OnTagClickListener {
+public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, View.OnClickListener, TagGroup.OnTagClickListener, AdapterView.OnItemSelectedListener {
 
     @Override
     public void onClick(View v) {
@@ -37,6 +42,22 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     @Override
     public void onTagClick(String tag) {
         searchDetailsListenerListener.onCategorySearch(tag);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        DoujinViewModel doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
+        if(position != 0 ) {
+            doujin.doujinBookmark = position;
+            doujinViewModel.insert(doujin);
+        } else {
+            doujinViewModel.delete(doujin);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     public interface SearchDetailsListener {
@@ -135,6 +156,14 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setOnTagClickListener(this);
         }
+
+        Spinner spinner = view.findViewById(R.id.bookmark_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
+                R.array.bookmark_array, R.layout.spinner_text_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(doujin.doujinBookmark);
+        spinner.setOnItemSelectedListener(this);
 
         RecyclerView recyclerView = view.findViewById(R.id.doujin_grid);
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 4));

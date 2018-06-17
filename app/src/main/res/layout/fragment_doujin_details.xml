@@ -175,6 +175,25 @@
                     app:layout_constraintLeft_toRightOf="@+id/manga_pages_label"
                     app:layout_constraintRight_toRightOf="parent"/>
 
+                <TextView
+                    android:id="@+id/manga_bookmark_label"
+                    style="@style/TextAppearance.Medium.Body2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bookmark"
+                    android:textIsSelectable="false"
+                    app:layout_constraintTop_toBottomOf="@+id/manga_pages_label"
+                    app:layout_constraintLeft_toLeftOf="parent"/>
+
+                <Spinner
+                    android:id="@+id/bookmark_spinner"
+                    style="@style/TextAppearance.Regular.Body1.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/manga_bookmark_label"
+                    app:layout_constraintLeft_toRightOf="@+id/manga_bookmark_label"
+                    app:layout_constraintRight_toRightOf="parent"/>
 
             </android.support.constraint.ConstraintLayout>
 

@@ -1,6 +1,7 @@
 package com.stuff.doujin.h2r.network;
 
 import com.stuff.doujin.h2r.data.Doujin;
+import com.stuff.doujin.h2r.fragments.DoujinListFragment;
 import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import org.jsoup.Jsoup;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -20,7 +22,7 @@ import okhttp3.Response;
 public final class GetDoujinList implements Callback {
 
     public interface DoujinListLoaded {
-        void doujinListLoaded(ArrayList<Doujin> doujinList, String nextPageUrl);
+        DoujinListFragment doujinListLoaded(List<Doujin> doujinList, String nextPageUrl);
     }
 
     private ArrayList<Doujin> doujinList = new ArrayList<>();

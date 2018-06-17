@@ -5,6 +5,7 @@ import android.content.Context;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.data.Chapter;
 import com.stuff.doujin.h2r.data.Doujin;
+import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,7 +31,12 @@ public class GetDoujinDetails implements Callback {
 
     private Doujin doujin;
     private DoujinDetailsLoaded doujinDetailsLoaded;
+    private DoujinViewModel doujinViewModel;
     private String baseUrl = "https://hentai2read.com";
+
+    public GetDoujinDetails(DoujinViewModel doujinViewModel) {
+        this.doujinViewModel = doujinViewModel;
+    }
 
     public void loadDoujinDetails(DoujinDetailsLoaded doujinDetailsLoaded, Doujin doujin) {
         this.doujin = doujin;
@@ -106,7 +112,12 @@ public class GetDoujinDetails implements Callback {
             } catch (URISyntaxException exception) {
             }
             if(!doujin.imageId.equals(imageId)) {
-                doujin.relatedDoujinList.add(new Doujin(title, imageId, doujinUrl));
+                Doujin dbDoujin = doujinViewModel.findDoujin(imageId);
+                if(dbDoujin == null) {
+                    doujin.relatedDoujinList.add(new Doujin(title, imageId, doujinUrl));
+                } else {
+                    doujin.relatedDoujinList.add(dbDoujin);
+                }
             }
         }
 

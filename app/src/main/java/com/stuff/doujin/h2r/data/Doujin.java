@@ -16,14 +16,15 @@ import java.util.List;
 @Entity(tableName = "doujin_table")
 public class Doujin implements Serializable {
 
-    @IntDef({Bookmark.NONE, Bookmark.FAVORITE, Bookmark.ON_HOLD, Bookmark.PLAN_TO_READ, Bookmark.BLACKLIST})
+    @IntDef({Bookmark.NONE, Bookmark.FAVORITE, Bookmark.ON_HOLD, Bookmark.PLAN_TO_READ, Bookmark.COMPLETED, Bookmark.BLACKLIST})
     @Retention(RetentionPolicy.SOURCE)
-    @interface Bookmark {
+    public @interface Bookmark {
         int NONE = 0;
         int FAVORITE = 1;
         int ON_HOLD = 2;
         int PLAN_TO_READ = 3;
-        int BLACKLIST = 4;
+        int COMPLETED = 4;
+        int BLACKLIST = 5;
     }
 
     public String baseCoverUrl = "https://img1.hentaicdn.com/hentai/cover";
