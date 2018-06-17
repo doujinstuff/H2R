@@ -25,6 +25,14 @@ import com.stuff.doujin.h2r.network.GetDoujinList;
 import com.stuff.doujin.h2r.network.GetPageList;
 import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
@@ -99,6 +107,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         if(id == R.id.action_export_json) {
             doujinViewModel.getDoujinsForExport(getBaseContext());
+        } else if(id == R.id.action_import_json) {
+            importJson();
         }
 
         return super.onOptionsItemSelected(item);
@@ -280,5 +290,39 @@ public class MainActivity extends AppCompatActivity
         String searchUrl = "/hentai-list/category/" + category;
         startLoadingFragment();
         getDoujinList.loadDoujinList(this, searchUrl.replaceAll(" ", "%20"), true);
+    }
+
+    private void importJson() {
+        File file = new File(getBaseContext().getExternalFilesDir(null),"H2RExport.json");
+        StringBuilder builder = new StringBuilder();
+        try {
+            if (!file.exists()) {
+                Toast.makeText(getBaseContext(), "Import File Does Not Exist", Toast.LENGTH_LONG).show();
+            }
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append('\n');
+            }
+            reader.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getBaseContext(), "Error Importing", Toast.LENGTH_LONG).show();
+            return;
+        }
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(builder.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObj = jsonArray.getJSONObject(i);
+                doujinViewModel.insert(new Doujin(jsonObj.getString("title"), jsonObj.getString("id"), jsonObj.getString("url"), jsonObj.getInt("bookmark")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getBaseContext(), "Error Importing", Toast.LENGTH_LONG).show();
+        }
+        Toast.makeText(getBaseContext(), "Importing Complete", Toast.LENGTH_LONG).show();
     }
 }

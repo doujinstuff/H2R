@@ -81,6 +81,15 @@ public class Doujin implements Serializable {
         this.doujinBookmark = Bookmark.NONE;
     }
 
+    @Ignore
+    public Doujin(String doujinTitle, String doujinId, String doujinUrl, @Bookmark int doujinBookmark) {
+        this.doujinTitle = doujinTitle;
+        this.imageUrl = baseCoverUrl + "/_S" + doujinId + ".jpg";
+        this.doujinId = doujinId;
+        this.doujinUrl = doujinUrl;
+        this.doujinBookmark = doujinBookmark;
+    }
+
     @Override
     public int hashCode() {
         return doujinUrl.hashCode();
