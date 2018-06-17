@@ -48,6 +48,11 @@ public class Doujin implements Serializable {
     @ColumnInfo(name = "doujin_bookmark")
     @Bookmark public int doujinBookmark;
 
+    @ColumnInfo(name = "doujin_page")
+    @Bookmark public int doujinPage;
+
+    @ColumnInfo(name = "doujin_last_updated")
+    @Bookmark public long doujinLastUpdated;
 
     @Ignore
     public String doujinAuthor;
@@ -78,7 +83,9 @@ public class Doujin implements Serializable {
         this.imageUrl = baseCoverUrl + "/_S" + doujinId + ".jpg";
         this.doujinId = doujinId;
         this.doujinUrl = doujinUrl;
+        this.doujinPage = 0;
         this.doujinBookmark = Bookmark.NONE;
+        this.doujinLastUpdated = 0;
     }
 
     @Ignore

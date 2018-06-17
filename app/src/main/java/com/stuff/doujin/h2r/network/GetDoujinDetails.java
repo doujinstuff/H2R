@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -84,7 +87,57 @@ public class GetDoujinDetails implements Callback {
             }
 
 
-            doujinChapter.chapterDateUpload = document.select("ul.nav-chapters > li > div.media > a").first().select("div > small").text();
+            String chapterDateUpload = document.select("ul.nav-chapters > li > div.media > a").first().select("div > small").text();
+            Matcher match = Pattern.compile("about (\\d+\\s+\\w+\\s+ago)").matcher(chapterDateUpload);
+            if(match.find()) {
+                String[] dateWords = match.group(1).split(" ");
+                if (dateWords.length == 3) {
+                    int timeAgo = Integer.parseInt(dateWords[0]);
+                    Calendar calendar = Calendar.getInstance();
+                    switch (dateWords[1]) {
+                        case "minute":
+                            calendar.add(Calendar.MINUTE, -1*timeAgo);
+                            break;
+                        case "minutes":
+                            calendar.add(Calendar.MINUTE, -1*timeAgo);
+                            break;
+                        case "hour":
+                            calendar.add(Calendar.HOUR, -1*timeAgo);
+                            break;
+                        case "hours":
+                            calendar.add(Calendar.HOUR, -1*timeAgo);
+                            break;
+                        case "day":
+                            calendar.add(Calendar.DAY_OF_YEAR, -1*timeAgo);
+                            break;
+                        case "days":
+                            calendar.add(Calendar.DAY_OF_YEAR, -1*timeAgo);
+                            break;
+                        case "week":
+                            calendar.add(Calendar.WEEK_OF_YEAR, -1*timeAgo);
+                            break;
+                        case "weeks":
+                            calendar.add(Calendar.WEEK_OF_YEAR, -1*timeAgo);
+                            break;
+                        case "month":
+                            calendar.add(Calendar.MONTH, -1*timeAgo);
+                            break;
+                        case "months":
+                            calendar.add(Calendar.MONTH, -1*timeAgo);
+                            break;
+                        case "year":
+                            calendar.add(Calendar.YEAR, -1*timeAgo);
+                            break;
+                        case "years":
+                            calendar.add(Calendar.YEAR, -1*timeAgo);
+                            break;
+                    }
+                    doujinChapter.chapterDateUpload = calendar.getTimeInMillis();
+                } else {
+                    doujinChapter.chapterDateUpload = 0;
+                }
+            }
+            doujin.doujinLastUpdated = Math.max(doujin.doujinLastUpdated, doujinChapter.chapterDateUpload);
             chapterList.add(doujinChapter);
         }
 

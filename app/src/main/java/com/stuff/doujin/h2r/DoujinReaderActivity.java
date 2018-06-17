@@ -1,12 +1,9 @@
 package com.stuff.doujin.h2r;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -15,9 +12,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
 
 public class DoujinReaderActivity extends AppCompatActivity {
 
@@ -40,7 +34,9 @@ public class DoujinReaderActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         Intent intent = getIntent();
-        pageList = intent.getStringArrayListExtra("PAGES");
+        pageList = intent.getStringArrayListExtra("PAGE LIST");
+        viewIndex = intent.getIntExtra("CURRENT PAGE", 0);
+        viewIndex = Math.max(0, viewIndex - 1);
 
         currentImageView =  findViewById(R.id.image_view_1);
         nextImageView =  findViewById(R.id.image_view_2);
@@ -71,11 +67,13 @@ public class DoujinReaderActivity extends AppCompatActivity {
         toast.show();
 
         Glide.with(nextImageView.getContext()).clear(nextImageView);
-        if(pageList.size() > 1) {
+        if(viewIndex + 1 < pageList.size()) {
             Glide.with(nextImageView.getContext()).load(baseImageUrl + pageList.get(viewIndex + 1)).apply(options).into(nextImageView);
         }
+        if(viewIndex - 1 >= 0) {
+            Glide.with(prevImageView.getContext()).load(baseImageUrl + pageList.get(viewIndex - 1)).apply(options).into(prevImageView);
+        }
     }
-
 
     private void nextPage() {
         if(viewIndex + 1 >= pageList.size()) {
@@ -128,4 +126,13 @@ public class DoujinReaderActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), "Page Out Of Range", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("CURRENT PAGE", viewIndex + 1);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
 }

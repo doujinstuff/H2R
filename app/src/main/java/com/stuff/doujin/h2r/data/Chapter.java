@@ -6,6 +6,6 @@ import java.util.List;
 public class Chapter implements Serializable {
     public String chapterUrl;
     public String chapterName;
-    public String chapterDateUpload;
+    public long chapterDateUpload;
     public List<String> pages;
 }
