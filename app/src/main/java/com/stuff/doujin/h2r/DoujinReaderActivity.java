@@ -1,7 +1,9 @@
 package com.stuff.doujin.h2r;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +15,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
-public class DoujinReaderActivity extends AppCompatActivity {
+public class DoujinReaderActivity extends AppCompatActivity implements View.OnLongClickListener {
 
     private ImageView currentImageView;
     private ImageView nextImageView;
@@ -21,6 +23,7 @@ public class DoujinReaderActivity extends AppCompatActivity {
     private ArrayList<String> pageList;
     private RequestOptions options = new RequestOptions();
     private Button leftButton;
+    private Button middleButton;
     private Button rightButton;
     private int viewIndex;
     private String baseImageUrl = "https://static.hentaicdn.com/hentai";
@@ -57,6 +60,9 @@ public class DoujinReaderActivity extends AppCompatActivity {
                 prevPage();
             }
         });
+
+        middleButton = findViewById(R.id.middle_button);
+        middleButton.setOnLongClickListener(this);
 
         options.fitCenter();
 
@@ -135,4 +141,24 @@ public class DoujinReaderActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public boolean onLongClick(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Options")
+                .setItems(R.array.reader_options_array, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(which == 0) {
+                            Glide.with(currentImageView.getContext()).clear(currentImageView);
+                            Glide.with(currentImageView.getContext()).load(baseImageUrl + pageList.get(viewIndex)).apply(options).into(currentImageView);
+                        } else if(which == 1) {
+                            Intent intent = new Intent();
+                            intent.putExtra("CURRENT PAGE", 0);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    }
+                });
+        builder.create().show();
+        return false;
+    }
 }

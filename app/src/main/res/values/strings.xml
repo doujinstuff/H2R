@@ -32,5 +32,11 @@
         <item>Blacklist</item>
     </string-array>
 
+    <string-array name="reader_options_array">
+        <item>Reload</item>
+        <item>Reset</item>
+    </string-array>
+
+
 
 </resources>
