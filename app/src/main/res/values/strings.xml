@@ -35,6 +35,7 @@
     <string-array name="reader_options_array">
         <item>Reload</item>
         <item>Reset</item>
+        <item>Open Image In Browser</item>
     </string-array>
 
 

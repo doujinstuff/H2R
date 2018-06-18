@@ -2,6 +2,7 @@ package com.stuff.doujin.h2r;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -155,6 +156,10 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
                             intent.putExtra("CURRENT PAGE", 0);
                             setResult(RESULT_OK, intent);
                             finish();
+                        } else if(which == 2) {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseImageUrl + pageList.get(viewIndex)));
+                            startActivity(browserIntent);
+
                         }
                     }
                 });
