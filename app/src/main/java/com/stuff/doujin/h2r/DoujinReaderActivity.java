@@ -159,7 +159,6 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
                         } else if(which == 2) {
                             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseImageUrl + pageList.get(viewIndex)));
                             startActivity(browserIntent);
-
                         }
                     }
                 });

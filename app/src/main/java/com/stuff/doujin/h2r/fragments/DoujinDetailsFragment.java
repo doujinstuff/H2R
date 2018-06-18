@@ -2,6 +2,7 @@ package com.stuff.doujin.h2r.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,7 @@ import me.gujun.android.taggroup.TagGroup;
 
 import static android.app.Activity.RESULT_OK;
 
-public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, View.OnClickListener, TagGroup.OnTagClickListener, AdapterView.OnItemSelectedListener {
+public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, View.OnClickListener, TagGroup.OnTagClickListener, AdapterView.OnItemSelectedListener, View.OnLongClickListener {
 
     public interface SearchDetailsListener {
         void onAuthorSearch(String author);
@@ -47,6 +48,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     private TextView currentPageView;
     private TextView bookmarkDateView;
     private TextView bookmarkDateLabelView;
+    private String baseUrl = "https://hentai2read.com";
 
     public void setDoujinListListener(DoujinListFragment.DoujinListListener doujinListListener) {
         this.relatedDoujinListListener = doujinListListener;
@@ -72,33 +74,33 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     public void onViewCreated(View view, Bundle savedInstanceState) {
         String unknownText = getResources().getString(R.string.unknown);
 
-        if(doujin.doujinTitle != null && !doujin.doujinTitle.isEmpty()) {
+        if (doujin.doujinTitle != null && !doujin.doujinTitle.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_full_title)).setText(doujin.doujinTitle);
         } else {
             ((TextView) view.findViewById(R.id.manga_full_title)).setText(unknownText);
         }
 
-        if(doujin.doujinAuthor != null && !doujin.doujinAuthor.isEmpty()) {
+        if (doujin.doujinAuthor != null && !doujin.doujinAuthor.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_author)).setText(doujin.doujinAuthor);
             view.findViewById(R.id.manga_author).setOnClickListener(this);
         } else {
             ((TextView) view.findViewById(R.id.manga_author)).setText(unknownText);
         }
 
-        if(doujin.doujinArtist != null && !doujin.doujinArtist.isEmpty()) {
+        if (doujin.doujinArtist != null && !doujin.doujinArtist.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_artist)).setText(doujin.doujinArtist);
             view.findViewById(R.id.manga_artist).setOnClickListener(this);
         } else {
             ((TextView) view.findViewById(R.id.manga_artist)).setText(unknownText);
         }
 
-        if(doujin.doujinLastUpdated != 0L) {
+        if (doujin.doujinLastUpdated != 0L) {
             ((TextView) view.findViewById(R.id.manga_last_update)).setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinLastUpdated));
         } else {
             ((TextView) view.findViewById(R.id.manga_last_update)).setText("Unknown");
         }
 
-        if(doujin.doujinStatus != null && !doujin.doujinStatus.isEmpty()) {
+        if (doujin.doujinStatus != null && !doujin.doujinStatus.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_status)).setText(doujin.doujinStatus);
         } else {
             ((TextView) view.findViewById(R.id.manga_status)).setText(unknownText);
@@ -107,7 +109,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
         currentPageView = view.findViewById(R.id.manga_current_page);
         currentPageView.setText(String.valueOf(doujin.doujinPage));
 
-        if(doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
+        if (doujin.doujinPages != null && !doujin.doujinPages.isEmpty()) {
             ((TextView) view.findViewById(R.id.manga_pages)).setText(String.valueOf(doujin.doujinPages.size()));
         } else {
             ((TextView) view.findViewById(R.id.manga_pages)).setText("0");
@@ -115,7 +117,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
 
         bookmarkDateView = view.findViewById(R.id.manga_bookmark_date);
         bookmarkDateLabelView = view.findViewById(R.id.manga_bookmark_date_label);
-        if(doujin.doujinBookmarkDate != 0L) {
+        if (doujin.doujinBookmarkDate != 0L) {
             bookmarkDateView.setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinBookmarkDate));
             bookmarkDateView.setVisibility(View.VISIBLE);
             bookmarkDateLabelView.setVisibility(View.VISIBLE);
@@ -124,7 +126,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             bookmarkDateLabelView.setVisibility(View.GONE);
         }
 
-        if(doujin.imageUrl != null && !doujin.imageUrl.isEmpty()) {
+        if (doujin.imageUrl != null && !doujin.imageUrl.isEmpty()) {
             RequestOptions options = new RequestOptions();
             options.centerCrop();
             ImageView doujinCover = view.findViewById(R.id.manga_cover);
@@ -145,11 +147,13 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
                 }
             });
 
+            doujinCover.setOnLongClickListener(this);
+
             Glide.with(view.getContext()).clear(doujinBackdrop);
             Glide.with(view.getContext()).load(doujin.imageUrl).apply(options).into(doujinBackdrop);
         }
 
-        if(doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
+        if (doujin.doujinGenres != null && !doujin.doujinGenres.isEmpty()) {
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setTags(doujin.doujinGenres.split(", "));
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setOnTagClickListener(this);
         }
@@ -170,7 +174,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
 
     @Override
     public void onDoujinClick(Doujin doujin) {
-        if(relatedDoujinListListener != null) {
+        if (relatedDoujinListListener != null) {
             relatedDoujinListListener.onDoujinSelected(doujin);
         }
     }
@@ -181,9 +185,9 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.manga_artist) {
+        if (v.getId() == R.id.manga_artist) {
             searchDetailsListenerListener.onArtistSearch(((TextView) v).getText().toString());
-        } else if(v.getId() == R.id.manga_author) {
+        } else if (v.getId() == R.id.manga_author) {
             searchDetailsListenerListener.onAuthorSearch(((TextView) v).getText().toString());
         }
     }
@@ -196,7 +200,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         DoujinViewModel doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
-        if(position != 0 ) {
+        if (position != 0) {
             doujin.doujinBookmark = position;
             doujin.doujinBookmarkDate = System.currentTimeMillis();
             doujinViewModel.insert(doujin);
@@ -225,11 +229,18 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
                 doujin.doujinPage = currentPage;
                 currentPageView.setText(String.valueOf(doujin.doujinPage));
 
-                if(doujin.doujinBookmark != 0 ) {
+                if (doujin.doujinBookmark != 0) {
                     doujin.doujinBookmarkDate = System.currentTimeMillis();
                     doujinViewModel.insert(doujin);
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + doujin.doujinUrl));
+        startActivity(browserIntent);
+        return false;
     }
 }
