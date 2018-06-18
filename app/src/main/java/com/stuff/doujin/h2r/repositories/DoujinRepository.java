@@ -26,6 +26,8 @@ public class DoujinRepository {
     private LiveData<List<Doujin>> favoriteDoujins;
     private LiveData<List<Doujin>> onHoldDoujins;
     private LiveData<List<Doujin>> planToReadDoujins;
+    private LiveData<List<Doujin>> completedDoujins;
+    private LiveData<List<Doujin>> blacklistDoujins;
 
     public DoujinRepository(Application application) {
         DoujinRoomDatabase db = DoujinRoomDatabase.getDatabase(application);
@@ -34,6 +36,8 @@ public class DoujinRepository {
         favoriteDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.FAVORITE);
         onHoldDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.ON_HOLD);
         planToReadDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.PLAN_TO_READ);
+        completedDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.COMPLETED);
+        blacklistDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.BLACKLIST);
     }
 
     public LiveData<List<Doujin>> getAllDoujins() {
@@ -52,6 +56,14 @@ public class DoujinRepository {
         return planToReadDoujins;
     }
 
+    public LiveData<List<Doujin>> getCompletedDoujins() {
+        return completedDoujins;
+    }
+
+    public LiveData<List<Doujin>> getBlacklistDoujins() {
+        return blacklistDoujins;
+    }
+
     public Doujin findDoujin (String doujinId) {
         return doujinDao.findDoujin(doujinId);
     }
@@ -64,8 +76,9 @@ public class DoujinRepository {
         new insertAsyncTask(doujinDao).execute(doujin);
     }
 
-    public void delete (Doujin doujin) { new deleteAsyncTask(doujinDao).execute(doujin);
-    }
+    public void delete (Doujin doujin) { new deleteAsyncTask(doujinDao).execute(doujin); }
+
+    public void deleteAll() { new deleteAllAsyncTask(doujinDao).execute(); }
 
     private static class insertAsyncTask extends AsyncTask<Doujin, Void, Void> {
 
@@ -96,6 +109,22 @@ public class DoujinRepository {
             return null;
         }
     }
+
+    private static class deleteAllAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private DoujinDao asyncTaskDao;
+
+        deleteAllAsyncTask(DoujinDao dao) {
+            asyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            asyncTaskDao.deleteAll();
+            return null;
+        }
+    }
+
 
     private static class exportAsyncTask extends AsyncTask<Void, Void, List<Doujin>> {
 

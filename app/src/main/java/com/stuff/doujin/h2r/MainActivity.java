@@ -109,8 +109,35 @@ public class MainActivity extends AppCompatActivity
             doujinViewModel.getDoujinsForExport(getBaseContext());
         } else if(id == R.id.action_import_json) {
             importJson();
+        } else if(id == R.id.action_view_completed) {
+            startLoadingFragment();
+            doujinViewModel.getCompletedDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
+                @Override
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
+                }
+            });
+        } else if(id == R.id.action_view_blacklist) {
+            startLoadingFragment();
+            doujinViewModel.getBlacklistDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
+                @Override
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
+                }
+            });
+        } else if(id == R.id.action_delete_all) {
+            doujinViewModel.deleteAll();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -294,7 +321,7 @@ public class MainActivity extends AppCompatActivity
 
     private void importJson() {
         File file = new File(getBaseContext().getExternalFilesDir(null),"H2RExport.json");
-        StringBuilder builder = new StringBuilder();
+        String builder = "";
         try {
             if (!file.exists()) {
                 Toast.makeText(getBaseContext(), "Import File Does Not Exist", Toast.LENGTH_LONG).show();
@@ -302,8 +329,7 @@ public class MainActivity extends AppCompatActivity
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {
-                builder.append(line);
-                builder.append('\n');
+                builder += line;
             }
             reader.close();
 
@@ -314,7 +340,7 @@ public class MainActivity extends AppCompatActivity
         }
         JSONArray jsonArray = null;
         try {
-            jsonArray = new JSONArray(builder.toString());
+            jsonArray = new JSONArray(builder);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObj = jsonArray.getJSONObject(i);
                 doujinViewModel.insert(new Doujin(jsonObj.getString("title"), jsonObj.getString("id"), jsonObj.getString("url"), jsonObj.getInt("bookmark"), jsonObj.getLong("bookmark_date")));

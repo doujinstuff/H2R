@@ -8,6 +8,9 @@
     <string name="action_show_search">Search</string>
     <string name="action_import_json">Import</string>
     <string name="action_export_json">Export</string>
+    <string name="action_view_completed">Completed</string>
+    <string name="action_view_blacklist">Blacklist</string>
+    <string name="action_delete_all">Delete All</string>
     <string name="unknown">Unknown</string>
 
     <!-- String Fonts -->

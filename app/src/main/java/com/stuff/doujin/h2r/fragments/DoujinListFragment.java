@@ -1,5 +1,6 @@
 package com.stuff.doujin.h2r.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static android.app.Activity.RESULT_OK;
 
 public class DoujinListFragment extends Fragment implements DoujinAdapter.DoujinAdapterListener, GetDoujinList.DoujinListLoaded, SwipeRefreshLayout.OnRefreshListener {
 
@@ -119,5 +122,15 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
         };
         mainHandler.post(myRunnable);
         return this;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+
+            }
+        }
     }
 }
