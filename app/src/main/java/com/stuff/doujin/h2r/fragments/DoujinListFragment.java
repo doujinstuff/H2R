@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.stuff.doujin.h2r.MainActivity;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
@@ -63,7 +64,9 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        doujinList = (List<Doujin>) getArguments().getSerializable("doujins");
+        MainActivity activity = (MainActivity) getActivity();
+        doujinList = activity.getData();
+
         doujinSet.clear();
         doujinSet.addAll(doujinList);
         nextPageUrl = getArguments().getString("nextPageUrl");

@@ -33,7 +33,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     GetDoujinDetails getDoujinDetails;
     GetPageList getPageList;
     DoujinViewModel doujinViewModel;
+    private List<Doujin> data;
 
 
     @Override
@@ -228,9 +228,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public DoujinListFragment doujinListLoaded(List<Doujin> doujinList, String nextPageUrl) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable("doujins", (Serializable) doujinList);
+//        bundle.putSerializable("doujins", (Serializable) doujinList);
         bundle.putString("nextPageUrl", nextPageUrl);
-
+        data = doujinList;
         DoujinListFragment fragment = new DoujinListFragment();
         fragment.setDoujinListListener(this);
         fragment.setArguments(bundle);
@@ -350,5 +350,9 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(getBaseContext(), "Error Importing", Toast.LENGTH_LONG).show();
         }
         Toast.makeText(getBaseContext(), "Importing Complete", Toast.LENGTH_LONG).show();
+    }
+
+    public List<Doujin> getData() {
+        return data;
     }
 }
