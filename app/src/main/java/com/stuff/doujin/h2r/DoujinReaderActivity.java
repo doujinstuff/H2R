@@ -27,6 +27,7 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
     private Button middleButton;
     private Button rightButton;
     private int viewIndex;
+    private int bookmark;
     private String baseImageUrl = "https://static.hentaicdn.com/hentai";
     private Toast toast;
 
@@ -40,6 +41,7 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
         Intent intent = getIntent();
         pageList = intent.getStringArrayListExtra("PAGE LIST");
         viewIndex = intent.getIntExtra("CURRENT PAGE", 0);
+        bookmark = intent.getIntExtra("BOOKMARK", -1);
         viewIndex = Math.max(0, viewIndex - 1);
 
         currentImageView =  findViewById(R.id.image_view_1);
@@ -84,6 +86,23 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
 
     private void nextPage() {
         if(viewIndex + 1 >= pageList.size()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Bookmark")
+                    .setItems(R.array.reader_bookmark_array, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which == 0) {
+                                bookmark = 1;
+                            } else if (which == 1){
+                                bookmark = 4;
+                            }
+                            Intent intent = new Intent();
+                            intent.putExtra("CURRENT PAGE", viewIndex + 1);
+                            intent.putExtra("BOOKMARK", bookmark);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                    });
+            builder.create().show();
             return;
         }
         viewIndex++;
@@ -154,6 +173,7 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
                         } else if(which == 1) {
                             Intent intent = new Intent();
                             intent.putExtra("CURRENT PAGE", 0);
+                            intent.putExtra("BOOKMARK", bookmark);
                             setResult(RESULT_OK, intent);
                             finish();
                         } else if(which == 2) {

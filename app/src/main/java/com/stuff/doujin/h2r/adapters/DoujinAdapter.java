@@ -28,6 +28,8 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
         void onDoujinClick(Doujin doujin);
 
         void onBottomReached();
+
+        void onDoujinLongClick(Doujin doujin);
     }
 
     public DoujinAdapter(@NonNull Context context, List<Doujin> doujinList) {
@@ -85,8 +87,7 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
         this.doujinAdapterListener = doujinAdapterListener;
     }
 
-    class DoujinViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-    {
+    class DoujinViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         ImageView imageView;
         TextView titleTextView;
@@ -103,6 +104,7 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
 
             imageView = itemView.findViewById(R.id.doujin_image);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -112,5 +114,13 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
             }
         }
 
+        @Override
+        public boolean onLongClick(View view) {
+            if (doujinAdapterListener != null) {
+                doujinAdapterListener.onDoujinLongClick(doujinList.get(getAdapterPosition()));
+                return true;
+            }
+            return false;
+        }
     }
 }

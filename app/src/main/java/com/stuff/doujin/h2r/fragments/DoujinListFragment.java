@@ -1,5 +1,7 @@
 package com.stuff.doujin.h2r.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +9,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +20,7 @@ import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
 import com.stuff.doujin.h2r.data.Doujin;
 import com.stuff.doujin.h2r.network.GetDoujinList;
+import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,6 +96,30 @@ public class DoujinListFragment extends Fragment implements DoujinAdapter.Doujin
         if(doujinListListener != null) {
             doujinListListener.onBottomReached(this);
         }
+    }
+
+    @Override
+    public void onDoujinLongClick(final Doujin doujin) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final DoujinViewModel doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
+        builder.setTitle("Bookmark")
+                .setItems(R.array.bookmark_array, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which != 0) {
+                            if(which == 5) {
+                                doujinList.remove(doujin);
+                            }
+                            doujin.doujinBookmark = which;
+                            doujin.doujinBookmarkDate = System.currentTimeMillis();
+                            doujinViewModel.insert(doujin);
+                        } else {
+                            doujin.doujinBookmark = which;
+                            doujinViewModel.delete(doujin);
+                        }
+                        doujinAdapter.notifyDataSetChanged();
+                    }
+                });
+        builder.create().show();
     }
 
     @Override

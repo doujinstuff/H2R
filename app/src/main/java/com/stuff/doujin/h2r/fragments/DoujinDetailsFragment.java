@@ -45,6 +45,7 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     private DoujinAdapter doujinAdapter;
     private DoujinListFragment.DoujinListListener relatedDoujinListListener;
     private SearchDetailsListener searchDetailsListenerListener;
+    private Spinner bookmarkSpinner;
     private TextView currentPageView;
     private TextView bookmarkDateView;
     private TextView bookmarkDateLabelView;
@@ -158,13 +159,13 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             ((TagGroup) view.findViewById(R.id.manga_genres_tags)).setOnTagClickListener(this);
         }
 
-        Spinner spinner = view.findViewById(R.id.bookmark_spinner);
+        bookmarkSpinner = view.findViewById(R.id.bookmark_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
                 R.array.bookmark_array, R.layout.spinner_text_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(doujin.doujinBookmark);
-        spinner.setOnItemSelectedListener(this);
+        bookmarkSpinner.setAdapter(adapter);
+        bookmarkSpinner.setSelection(doujin.doujinBookmark);
+        bookmarkSpinner.setOnItemSelectedListener(this);
 
         RecyclerView recyclerView = view.findViewById(R.id.doujin_grid);
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 4));
@@ -184,6 +185,11 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     }
 
     @Override
+    public void onDoujinLongClick(Doujin doujin) {
+
+    }
+
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.manga_artist) {
             searchDetailsListenerListener.onArtistSearch(((TextView) v).getText().toString());
@@ -200,6 +206,9 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         DoujinViewModel doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
+        if(position == doujin.doujinBookmark) {
+            return;
+        }
         if (position != 0) {
             doujin.doujinBookmark = position;
             doujin.doujinBookmarkDate = System.currentTimeMillis();
@@ -225,10 +234,14 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 int currentPage = data.getIntExtra("CURRENT PAGE", 0);
+                int bookmark = data.getIntExtra("BOOKMARK", -1);
                 DoujinViewModel doujinViewModel = ViewModelProviders.of(this).get(DoujinViewModel.class);
                 doujin.doujinPage = currentPage;
                 currentPageView.setText(String.valueOf(doujin.doujinPage));
-
+                if(bookmark > 0) {
+                    doujin.doujinBookmark = bookmark;
+                    bookmarkSpinner.setSelection(doujin.doujinBookmark);
+                }
                 if (doujin.doujinBookmark != 0) {
                     doujin.doujinBookmarkDate = System.currentTimeMillis();
                     doujinViewModel.insert(doujin);

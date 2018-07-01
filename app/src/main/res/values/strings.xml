@@ -32,6 +32,11 @@
         <item>Blacklist</item>
     </string-array>
 
+    <string-array name="reader_bookmark_array">
+        <item>Favorite</item>
+        <item>Completed</item>
+    </string-array>
+
     <string-array name="reader_options_array">
         <item>Reload</item>
         <item>Reset</item>
