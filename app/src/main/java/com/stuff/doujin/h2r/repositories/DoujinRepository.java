@@ -28,6 +28,7 @@ public class DoujinRepository {
     private LiveData<List<Doujin>> planToReadDoujins;
     private LiveData<List<Doujin>> completedDoujins;
     private LiveData<List<Doujin>> blacklistDoujins;
+    private LiveData<List<Doujin>> queuedDoujins;
 
     public DoujinRepository(Application application) {
         DoujinRoomDatabase db = DoujinRoomDatabase.getDatabase(application);
@@ -38,6 +39,7 @@ public class DoujinRepository {
         planToReadDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.PLAN_TO_READ);
         completedDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.COMPLETED);
         blacklistDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.BLACKLIST);
+        queuedDoujins = doujinDao.getDoujinByBookmark(Doujin.Bookmark.QUEUED);
     }
 
     public LiveData<List<Doujin>> getAllDoujins() {
@@ -62,6 +64,10 @@ public class DoujinRepository {
 
     public LiveData<List<Doujin>> getBlacklistDoujins() {
         return blacklistDoujins;
+    }
+
+    public LiveData<List<Doujin>> getQueuedDoujins() {
+        return queuedDoujins;
     }
 
     public Doujin findDoujin (String doujinId) {

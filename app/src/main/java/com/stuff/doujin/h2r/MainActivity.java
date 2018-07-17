@@ -23,6 +23,7 @@ import com.stuff.doujin.h2r.fragments.LoadingFragment;
 import com.stuff.doujin.h2r.network.GetDoujinDetails;
 import com.stuff.doujin.h2r.network.GetDoujinList;
 import com.stuff.doujin.h2r.network.GetPageList;
+import com.stuff.doujin.h2r.network.GoThroughQueue;
 import com.stuff.doujin.h2r.viewmodels.DoujinViewModel;
 
 import org.json.JSONArray;
@@ -36,12 +37,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded, SearchView.OnQueryTextListener, DoujinDetailsFragment.SearchDetailsListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded, SearchView.OnQueryTextListener, DoujinDetailsFragment.SearchDetailsListener, GoThroughQueue.DoujinQueue {
 
     String url;
     GetDoujinList getDoujinList;
     GetDoujinDetails getDoujinDetails;
     GetPageList getPageList;
+    GoThroughQueue goThroughQueue;
     DoujinViewModel doujinViewModel;
     private List<Doujin> data;
 
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         getDoujinList = new GetDoujinList(doujinViewModel);
         getDoujinDetails = new GetDoujinDetails(doujinViewModel);
         getPageList = new GetPageList();
+        goThroughQueue = new GoThroughQueue(this);
 
 
         if (savedInstanceState == null) {
@@ -137,6 +140,22 @@ public class MainActivity extends AppCompatActivity
             });
         } else if(id == R.id.action_delete_all) {
             doujinViewModel.deleteAll();
+        } else if (id == R.id.action_update_queue) {
+            startLoadingFragment();
+            doujinViewModel.getQueuedDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
+                @Override
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
+                    if(!doujinList.isEmpty()) {
+                        goThroughQueue.loadDoujinDetails(doujinList.get(0));
+                    }
+                }
+            });
         }
         return super.onOptionsItemSelected(item);
     }
@@ -354,5 +373,15 @@ public class MainActivity extends AppCompatActivity
 
     public List<Doujin> getData() {
         return data;
+    }
+
+    @Override
+    public void doujinUpdated(Doujin doujin) {
+        if(doujin.doujinStatus.equals("Completed")) {
+            doujin.doujinBookmark = 2;
+        } else {
+            doujin.doujinBookmark = 3;
+        }
+        doujinViewModel.insert(doujin);
     }
 }

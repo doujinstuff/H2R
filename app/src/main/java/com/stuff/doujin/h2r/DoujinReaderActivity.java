@@ -96,7 +96,7 @@ public class DoujinReaderActivity extends AppCompatActivity implements View.OnLo
                                 bookmark = 4;
                             }
                             Intent intent = new Intent();
-                            intent.putExtra("CURRENT PAGE", viewIndex + 1);
+                            intent.putExtra("CURRENT PAGE", 0);
                             intent.putExtra("BOOKMARK", bookmark);
                             setResult(RESULT_OK, intent);
                             finish();

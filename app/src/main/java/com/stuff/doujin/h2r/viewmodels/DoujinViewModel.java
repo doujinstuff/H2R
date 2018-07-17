@@ -20,6 +20,7 @@ public class DoujinViewModel extends AndroidViewModel {
     private LiveData<List<Doujin>> planToReadDoujins;
     private LiveData<List<Doujin>> completedDoujin;
     private LiveData<List<Doujin>> blacklistDoujin;
+    private LiveData<List<Doujin>> queuedDoujin;
 
     public DoujinViewModel (Application application) {
         super(application);
@@ -30,6 +31,7 @@ public class DoujinViewModel extends AndroidViewModel {
         planToReadDoujins = repository.getPlanToReadDoujins();
         completedDoujin = repository.getCompletedDoujins();
         blacklistDoujin = repository.getBlacklistDoujins();
+        queuedDoujin = repository.getQueuedDoujins();
     }
 
     public LiveData<List<Doujin>> getAllDoujins() { return allDoujins; }
@@ -43,6 +45,8 @@ public class DoujinViewModel extends AndroidViewModel {
     public LiveData<List<Doujin>> getCompletedDoujins() { return completedDoujin; }
 
     public LiveData<List<Doujin>> getBlacklistDoujins() { return blacklistDoujin; }
+
+    public LiveData<List<Doujin>> getQueuedDoujins() { return queuedDoujin; }
 
     public Doujin findDoujin(String doujinId) { return repository.findDoujin(doujinId); }
 

@@ -6,6 +6,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_show_search">Search</string>
+    <string name="action_update_queue">Update Queue</string>
     <string name="action_import_json">Import</string>
     <string name="action_export_json">Export</string>
     <string name="action_view_completed">Completed</string>
@@ -30,6 +31,7 @@
         <item>Plan To Read</item>
         <item>Completed</item>
         <item>Blacklist</item>
+        <item>Queue</item>
     </string-array>
 
     <string-array name="reader_bookmark_array">

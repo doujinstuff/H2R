@@ -27,6 +27,7 @@ public class Doujin implements Serializable {
         int PLAN_TO_READ = 3;
         int COMPLETED = 4;
         int BLACKLIST = 5;
+        int QUEUED = 6;
     }
 
     public String baseCoverUrl = "https://img1.hentaicdn.com/hentai/cover";
