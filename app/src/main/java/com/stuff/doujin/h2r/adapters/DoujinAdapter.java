@@ -65,6 +65,9 @@ public class DoujinAdapter extends RecyclerView.Adapter<DoujinAdapter.DoujinView
             if(doujin.doujinBookmark == Doujin.Bookmark.PLAN_TO_READ){
                 holder.bookmarkTextView.setText("Plan To Read");
             }
+            if(doujin.doujinBookmark == Doujin.Bookmark.QUEUED){
+                holder.bookmarkTextView.setText("Queued");
+            }
         }
 
         RequestOptions options = new RequestOptions();

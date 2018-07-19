@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -34,7 +35,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, DoujinListFragment.DoujinListListener, GetDoujinList.DoujinListLoaded, GetDoujinDetails.DoujinDetailsLoaded, GetPageList.ChapterPagesLoaded, SearchView.OnQueryTextListener, DoujinDetailsFragment.SearchDetailsListener, GoThroughQueue.DoujinQueue {
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity
     GoThroughQueue goThroughQueue;
     DoujinViewModel doujinViewModel;
     private List<Doujin> data;
-
+    Set<String> blackListTags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity
         getDoujinDetails = new GetDoujinDetails(doujinViewModel);
         getPageList = new GetPageList();
         goThroughQueue = new GoThroughQueue(this);
+        blackListTags = new HashSet<>();
+        blackListTags.addAll(Arrays.asList(getResources().getStringArray(R.array.blacklist_tags_array)));
 
 
         if (savedInstanceState == null) {
@@ -152,6 +158,22 @@ public class MainActivity extends AppCompatActivity
                         fragment.notifyDoujinSetChanged(doujinList);
                     }
                     if(!doujinList.isEmpty()) {
+                        goThroughQueue.loadDoujinDetails(doujinList.get(0));
+                    }
+                }
+            });
+        } else if (id == R.id.action_update_plan_to_read) {
+            startLoadingFragment();
+            doujinViewModel.getPlanToReadDoujins().observe(this, new Observer<List<Doujin>>() {
+                DoujinListFragment fragment;
+                @Override
+                public void onChanged(@Nullable List<Doujin> doujinList) {
+                    if(fragment == null) {
+                        fragment = doujinListLoaded(doujinList, null);
+                    } else {
+                        fragment.notifyDoujinSetChanged(doujinList);
+                    }
+                    if(!doujinList.isEmpty() && !DateUtils.isToday(doujinList.get(0).doujinBookmarkDate)) {
                         goThroughQueue.loadDoujinDetails(doujinList.get(0));
                     }
                 }
@@ -377,10 +399,18 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void doujinUpdated(Doujin doujin) {
+        doujin.doujinBookmarkDate = System.currentTimeMillis();
         if(doujin.doujinStatus.equals("Completed")) {
             doujin.doujinBookmark = 2;
         } else {
             doujin.doujinBookmark = 3;
+        }
+        for(String tag : doujin.doujinGenres.split(", ")) {
+            if(blackListTags.contains(tag)) {
+                doujin.doujinBookmark = 5;
+                doujinViewModel.insert(doujin);
+                return;
+            }
         }
         doujinViewModel.insert(doujin);
     }

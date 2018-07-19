@@ -7,6 +7,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_show_search">Search</string>
     <string name="action_update_queue">Update Queue</string>
+    <string name="action_update_plan_to_read">Update Plan to Read</string>
     <string name="action_import_json">Import</string>
     <string name="action_export_json">Export</string>
     <string name="action_view_completed">Completed</string>
@@ -43,6 +44,18 @@
         <item>Reload</item>
         <item>Reset</item>
         <item>Open Image In Browser</item>
+    </string-array>
+
+    <string-array name="blacklist_tags_array">
+        <item>Bestiality</item>
+        <item>Futa on Male</item>
+        <item>Scat</item>
+        <item>Yaoi</item>
+        <item>Korean Comic</item>
+        <item>Girls Only</item>
+        <item>Vore</item>
+        <item>Futanari</item>
+        <item>Lolicon</item>
     </string-array>
 
 
