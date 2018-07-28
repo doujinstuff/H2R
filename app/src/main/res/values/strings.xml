@@ -47,13 +47,16 @@
     </string-array>
 
     <string-array name="blacklist_tags_array">
-        <item>Bestiality</item>
         <item>Futa on Male</item>
         <item>Scat</item>
         <item>Yaoi</item>
         <item>Korean Comic</item>
         <item>Girls Only</item>
         <item>Vore</item>
+    </string-array>
+
+    <string-array name="check_tags_array">
+        <item>Bestiality</item>
         <item>Futanari</item>
         <item>Lolicon</item>
     </string-array>
