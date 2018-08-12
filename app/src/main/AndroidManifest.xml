@@ -25,6 +25,11 @@
         <activity
             android:name=".DoujinReaderActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".BrowserActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_browser"
             android:theme="@style/FullscreenTheme"></activity>
     </application>
 

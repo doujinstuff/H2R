@@ -2,7 +2,6 @@ package com.stuff.doujin.h2r.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.stuff.doujin.h2r.BrowserActivity;
 import com.stuff.doujin.h2r.DoujinReaderActivity;
 import com.stuff.doujin.h2r.R;
 import com.stuff.doujin.h2r.adapters.DoujinAdapter;
@@ -216,6 +216,10 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
             bookmarkDateView.setText(DateFormat.getDateInstance(DateFormat.SHORT).format(doujin.doujinBookmarkDate));
             bookmarkDateView.setVisibility(View.VISIBLE);
             bookmarkDateLabelView.setVisibility(View.VISIBLE);
+            Intent browserIntent = new Intent(getContext(), BrowserActivity.class);
+            browserIntent.putExtra("URL", baseUrl + doujin.doujinUrl);
+            browserIntent.putExtra("BOOKMARK", doujin.doujinBookmark);
+            startActivityForResult(browserIntent, 1);
         } else {
             doujinViewModel.delete(doujin);
             bookmarkDateView.setVisibility(View.GONE);
@@ -245,15 +249,23 @@ public class DoujinDetailsFragment extends Fragment implements DoujinAdapter.Dou
                 if (doujin.doujinBookmark != 0) {
                     doujin.doujinBookmarkDate = System.currentTimeMillis();
                     doujinViewModel.insert(doujin);
+                    Intent browserIntent = new Intent(getContext(), BrowserActivity.class);
+                    browserIntent.putExtra("URL", baseUrl + doujin.doujinUrl);
+                    browserIntent.putExtra("BOOKMARK", doujin.doujinBookmark);
+                    startActivityForResult(browserIntent, 1);
                 }
+                getActivity().onBackPressed();
             }
         }
     }
 
     @Override
     public boolean onLongClick(View v) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(baseUrl + doujin.doujinUrl));
-        startActivity(browserIntent);
+        Intent browserIntent = new Intent(getContext(), BrowserActivity.class);
+        browserIntent.putExtra("URL", baseUrl + doujin.doujinUrl);
+        browserIntent.putExtra("BOOKMARK", doujin.doujinBookmark);
+        browserIntent.putExtra("READING", true);
+        startActivityForResult(browserIntent, 1);
         return false;
     }
 }
